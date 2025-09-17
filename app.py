@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return jsonify({"message":"Hello from Flask on Render!"})
+    return jsonify({"message":"API Testing!"})
 
 @app.route("/echo", methods=["POST"])
 def echo():
