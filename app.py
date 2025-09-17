@@ -38,18 +38,35 @@ def signup():
 
 @app.route("/login", methods=["POST"])
 def login():
-    data = request.json or {}
+    data = request.json
     email = data.get("email")
     password = data.get("password")
 
-    if not email or not password:
-        return jsonify({"success": False, "error": "Email and password required"}), 400
-
     try:
-        session = supabase.auth.sign_in_with_password({"email": email, "password": password})
-        return jsonify({"success": True, "session": session.model_dump()}), 200
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+
+        # Extract useful fields
+        session = auth_response.session
+        user = auth_response.user
+
+        response_data = {
+            "success": True,
+            "email": user.email if user else None,
+            "access_token": session.access_token if session else None,
+            "expires_at": session.expires_at if session else None,
+        }
+
+        return jsonify(response_data)
+
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 400
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 400
+
 
 
 if __name__ == "__main__":
