@@ -3,7 +3,7 @@ from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -29,26 +29,11 @@ def signup():
         return jsonify({"success": False, "error": "Email and password required"}), 400
 
     try:
-        # Supabase returns objects that are not JSON serializable by default
-        user = supabase.auth.sign_up({"email": email, "password": password})
-        return jsonify({"success": True, "user": user.model_dump()}), 200
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 400
-
-
-@app.route("/login", methods=["POST"])
-def login():
-    data = request.json
-    email = data.get("email")
-    password = data.get("password")
-
-    try:
-        auth_response = supabase.auth.sign_in_with_password({
+        auth_response = supabase.auth.sign_up({
             "email": email,
             "password": password
         })
 
-        # Extract useful fields
         session = auth_response.session
         user = auth_response.user
 
@@ -59,14 +44,44 @@ def login():
             "expires_at": session.expires_at if session else None,
         }
 
-        return jsonify(response_data)
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json or {}
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"success": False, "error": "Email and password required"}), 400
+
+    try:
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+
+        session = auth_response.session
+        user = auth_response.user
+
+        response_data = {
+            "success": True,
+            "email": user.email if user else None,
+            "access_token": session.access_token if session else None,
+            "expires_at": session.expires_at if session else None,
+        }
+
+        return jsonify(response_data), 200
 
     except Exception as e:
         return jsonify({
             "success": False,
             "error": str(e)
         }), 400
-
 
 
 if __name__ == "__main__":
