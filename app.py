@@ -1,45 +1,45 @@
-from flask import Flask, jsonify, request
-import jwt
-import datetime
+from flask import Flask, request, jsonify
+from supabase import create_client, Client
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
-# Secret key for signing JWTs (use env var in real apps!)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "mysecret")
+# Supabase connection
+url: str = os.getenv("SUPABASE_URL")
+key: str = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
 
 @app.route("/")
 def home():
-    return jsonify({"message": "API Testing!"})
+    return jsonify({"message": "API Testing with Supabase!"})
 
-@app.route("/echo", methods=["POST"])
-def echo():
-    data = request.json or {}
-    return jsonify({"you_sent": data})
-
-# --- New Login API ---
-@app.route("/login", methods=["POST"])
-def login():
-    data = request.json or {}
-    username = data.get("username")
+@app.route("/signup", methods=["POST"])
+def signup():
+    data = request.json
+    email = data.get("email")
     password = data.get("password")
 
-    # Dummy authentication (replace with DB lookup later)
-    if username == "admin" and password == "password123":
-        # Generate token valid for 30 minutes
-        token = jwt.encode(
-            {
-                "user": username,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
-            },
-            app.config["SECRET_KEY"],
-            algorithm="HS256"
-        )
-        return jsonify({"message": "Login successful!", "token": token})
-    else:
-        return jsonify({"message": "Invalid credentials"}), 401
+    try:
+        user = supabase.auth.sign_up({"email": email, "password": password})
+        return jsonify({"success": True, "user": user})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    try:
+        user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        return jsonify({"success": True, "session": user})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # works on Render too
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=5000)
