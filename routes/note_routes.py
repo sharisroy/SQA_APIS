@@ -70,16 +70,20 @@ def get_note(note_id):
         user_id = user_response.user.id
 
         # Fetch note from Supabase
-        note_resp = supabase.table("notes").select("*").eq("id", note_id).eq("user_id", user_id).single().execute()
+        note_resp = supabase.table("notes").select("*").eq("id", note_id).eq("user_id", user_id).execute()
         note_data = note_resp.data
 
-        if not note_data:
+        if not note_data or len(note_data) == 0:
             return jsonify({"success": False, "code": 404, "error": "Note not found."}), 404
 
-        return jsonify({"success": True, "code": 200, "note": {"id": note_data["id"], "note": note_data["note"]}}), 200
+        # Return first note
+        note = note_data[0]
+        return jsonify({"success": True, "code": 200, "note": {"id": note["id"], "note": note["note"]}}), 200
 
     except Exception as e:
         return jsonify({"success": False, "code": 400, "error": str(e)}), 400
+
+
 
 # -------------------
 # GET /note → Get all notes for the authenticated user
