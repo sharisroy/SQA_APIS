@@ -1,108 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to API Project</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; background-color: #f7f7f7; }
-        h1, h2 { color: #333; }
-        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
-        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
-        ul { margin-left: 1rem; }
-        ol { margin-left: 1rem; }
-        .card { background-color: white; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQA API Project Documentation</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f7f7f7;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        background-color: #2c3e50;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding-top: 20px;
+    }
+    .sidebar h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+        padding-bottom: 10px;
+    }
+    .menu-item {
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+    }
+    .menu-item:hover, .menu-item.active {
+        background-color: #34495e;
+        color: #1abc9c;
+    }
+
+    /* Content area */
+    .content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+        background-color: #ecf0f1;
+        transition: all 0.4s ease;
+    }
+    .card {
+        background-color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        opacity: 1;
+        transition: opacity 0.4s ease;
+    }
+    pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+    }
+    code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+</style>
 </head>
 <body>
-    <div class="card">
-        <h1>Welcome to Your API Project</h1>
+
+<div class="sidebar">
+    <h2>SQA API Docs</h2>
+    <div class="menu-item active" data-section="home">Home</div>
+    <div class="menu-item" data-section="signup">Signup</div>
+    <div class="menu-item" data-section="login">Login</div>
+    <div class="menu-item" data-section="profile">Profile</div>
+    <div class="menu-item" data-section="notes">Notes</div>
+</div>
+
+<div class="content">
+    <!-- Home -->
+    <div class="card section" id="home">
+        <h1>Welcome to SQA API Project</h1>
         <p>This project helps you practice both <strong>manual</strong> and <strong>automated API testing</strong> using Postman.</p>
+        <p>Use the menu on the left to jump to specific API instructions.</p>
     </div>
 
-    <div class="card">
-        <h2>API Endpoints</h2>
-        <ul>
-            <li>
-                <strong>Signup</strong>: <code>POST /signup</code>
-                <p>Request Body (JSON):</p>
-                <pre>{
+    <!-- Signup -->
+    <div class="card section" id="signup" style="display:none;">
+        <h2>Signup API</h2>
+        <p><strong>Endpoint:</strong> POST /signup</p>
+        <p><strong>Request Body (JSON):</strong></p>
+        <pre>{
     "name": "John Doe",
     "email": "john@example.com",
     "password": "your_password"
 }</pre>
-            </li>
-            <li>
-                <strong>Login</strong>: <code>POST /login</code>
-                <p>Request Body (JSON):</p>
-                <pre>{
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "message": "User registered successfully.",
+    "user": {
+        "email": "john@example.com",
+        "name": "John Doe"
+    }
+}</pre>
+        <p><strong>Postman Instructions:</strong> Select POST, add JSON body as above, click Send.</p>
+    </div>
+
+    <!-- Login -->
+    <div class="card section" id="login" style="display:none;">
+        <h2>Login API</h2>
+        <p><strong>Endpoint:</strong> POST /login</p>
+        <p><strong>Request Body (JSON):</strong></p>
+        <pre>{
     "email": "john@example.com",
     "password": "your_password"
 }</pre>
-            </li>
-            <li>
-                <strong>Profile</strong>: <code>GET /me</code>
-                <p>Headers:</p>
-                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-            </li>
-            <li>
-                <strong>Add Note</strong>: <code>POST /note</code>
-                <p>Headers:</p>
-                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-                <p>Request Body (JSON):</p>
-                <pre>{
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "message": "Login successful.",
+    "user": { "email": "john@example.com", "name": "John Doe" },
+    "auth": { "access_token": "xxxxxx", "expires_at": 1690000000 }
+}</pre>
+        <p><strong>Postman Instructions:</strong> Select POST, add JSON body, click Send.</p>
+    </div>
+
+    <!-- Profile -->
+    <div class="card section" id="profile" style="display:none;">
+        <h2>Profile API</h2>
+        <p><strong>Endpoint:</strong> GET /me</p>
+        <p><strong>Headers:</strong></p>
+        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "message": "Profile retrieved successfully.",
+    "user": { "email": "john@example.com", "name": "John Doe" }
+}</pre>
+        <p><strong>Postman Instructions:</strong> Select GET, add Authorization header, click Send.</p>
+    </div>
+
+    <!-- Notes -->
+    <div class="card section" id="notes" style="display:none;">
+        <h2>Notes APIs</h2>
+
+        <h3>Add Note</h3>
+        <p><strong>Endpoint:</strong> POST /note</p>
+        <p><strong>Headers:</strong></p>
+        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+        <p><strong>Request Body:</strong></p>
+        <pre>{
     "note": "Buy groceries"
 }</pre>
-            </li>
-            <li>
-                <strong>Get Note by ID</strong>: <code>GET /note/&lt;note_id&gt;</code>
-                <p>Headers:</p>
-                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-            </li>
-            <li>
-                <strong>Get All Notes</strong>: <code>GET /note?page=1&per_page=10</code>
-                <p>Headers:</p>
-                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-            </li>
-            <li>
-                <strong>Update Note</strong>: <code>PATCH /note/&lt;note_id&gt;</code>
-                <p>Headers:</p>
-                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-                <p>Request Body (JSON):</p>
-                <pre>{
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "message": "Note added successfully.",
+    "note_id": "uuid-generated"
+}</pre>
+
+        <h3>Get Note by ID</h3>
+        <p><strong>Endpoint:</strong> GET /note/&lt;note_id&gt;</p>
+        <p><strong>Headers:</strong></p>
+        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "note": { "id": "uuid-generated", "note": "Buy groceries" }
+}</pre>
+
+        <h3>Get All Notes</h3>
+        <p><strong>Endpoint:</strong> GET /note?page=1&per_page=10</p>
+        <p><strong>Headers:</strong></p>
+        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "page": 1,
+    "per_page": 10,
+    "total_notes": 5,
+    "notes": [
+        { "id": "uuid1", "note": "Buy groceries" },
+        { "id": "uuid2", "note": "Pay bills" }
+    ]
+}</pre>
+
+        <h3>Update Note</h3>
+        <p><strong>Endpoint:</strong> PATCH /note/&lt;note_id&gt;</p>
+        <p><strong>Headers:</strong></p>
+        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+        <p><strong>Request Body:</strong></p>
+        <pre>{
     "note": "Updated note text"
 }</pre>
-            </li>
-            <li>
-                <strong>Delete Note</strong>: <code>DELETE /note/&lt;note_id&gt;</code>
-                <p>Headers:</p>
-                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-            </li>
-        </ul>
-    </div>
 
-    <div class="card">
-        <h2>Steps to Test in Postman</h2>
-        <ol>
-            <li>Open Postman and create a new request.</li>
-            <li>For Signup/Login, select POST and add JSON body as shown above.</li>
-            <li>Click Send. You should receive a JSON response with your user info and access token.</li>
-            <li>For Profile and Notes APIs, select GET/POST/PATCH/DELETE as needed, add Authorization header: <code>Bearer &lt;access_token&gt;</code>, then click Send.</li>
-            <li>For Get All Notes, you can also add <code>page</code> and <code>per_page</code> query params to paginate results.</li>
-        </ol>
+        <h3>Delete Note</h3>
+        <p><strong>Endpoint:</strong> DELETE /note/&lt;note_id&gt;</p>
+        <p><strong>Headers:</strong></p>
+        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
     </div>
+</div>
 
-    <div class="card">
-        <h2>Tips</h2>
-        <ul>
-            <li>Keep your <code>access_token</code> safe; it authenticates your requests.</li>
-            <li>All endpoints return JSON with <code>success</code>, <code>code</code>, and <code>message</code>.</li>
-            <li>Use Postman environment variables for <code>access_token</code> to simplify testing multiple requests.</li>
-        </ul>
-    </div>
+<script>
+    const menuItems = document.querySelectorAll(".menu-item");
+    const sections = document.querySelectorAll(".section");
 
-    <div class="card">
-        <p>Happy Testing! 🚀</p>
-    </div>
+    menuItems.forEach(item => {
+        item.addEventListener("click", () => {
+            // Remove active class from all menu items
+            menuItems.forEach(i => i.classList.remove("active"));
+            item.classList.add("active");
+
+            const target = item.dataset.section;
+            sections.forEach(sec => {
+                if (sec.id === target) {
+                    sec.style.display = "block";
+                    sec.style.opacity = 0;
+                    setTimeout(() => sec.style.opacity = 1, 50); // fade-in animation
+                } else {
+                    sec.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
