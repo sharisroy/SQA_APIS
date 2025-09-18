@@ -10,6 +10,7 @@
         code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
         pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
         ul { margin-left: 1rem; }
+        ol { margin-left: 1rem; }
         .card { background-color: white; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; }
     </style>
 </head>
@@ -44,6 +45,39 @@
                 <p>Headers:</p>
                 <pre>Authorization: Bearer &lt;access_token&gt;</pre>
             </li>
+            <li>
+                <strong>Add Note</strong>: <code>POST /note</code>
+                <p>Headers:</p>
+                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+                <p>Request Body (JSON):</p>
+                <pre>{
+    "note": "Buy groceries"
+}</pre>
+            </li>
+            <li>
+                <strong>Get Note by ID</strong>: <code>GET /note/&lt;note_id&gt;</code>
+                <p>Headers:</p>
+                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+            </li>
+            <li>
+                <strong>Get All Notes</strong>: <code>GET /note?page=1&per_page=10</code>
+                <p>Headers:</p>
+                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+            </li>
+            <li>
+                <strong>Update Note</strong>: <code>PATCH /note/&lt;note_id&gt;</code>
+                <p>Headers:</p>
+                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+                <p>Request Body (JSON):</p>
+                <pre>{
+    "note": "Updated note text"
+}</pre>
+            </li>
+            <li>
+                <strong>Delete Note</strong>: <code>DELETE /note/&lt;note_id&gt;</code>
+                <p>Headers:</p>
+                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+            </li>
         </ul>
     </div>
 
@@ -53,7 +87,8 @@
             <li>Open Postman and create a new request.</li>
             <li>For Signup/Login, select POST and add JSON body as shown above.</li>
             <li>Click Send. You should receive a JSON response with your user info and access token.</li>
-            <li>For Profile, select GET, add Authorization header: <code>Bearer &lt;access_token&gt;</code>, then click Send.</li>
+            <li>For Profile and Notes APIs, select GET/POST/PATCH/DELETE as needed, add Authorization header: <code>Bearer &lt;access_token&gt;</code>, then click Send.</li>
+            <li>For Get All Notes, you can also add <code>page</code> and <code>per_page</code> query params to paginate results.</li>
         </ol>
     </div>
 
