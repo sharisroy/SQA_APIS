@@ -20,20 +20,19 @@ def signup():
     name = data.get("name")
     email = data.get("email")
     password = data.get("password")
-    phone = data.get("phone")
 
-    if not email or not password or not name or not phone:
+    if not email or not password or not name:
         return jsonify({
             "success": False,
             "code": 400,
-            "error": "Name, email, phone, and password are required."
+            "error": "Name, email, and password are required."
         }), 400
 
     try:
         auth_response = supabase.auth.sign_up({
             "email": email,
             "password": password,
-            "options": {"data": {"name": name, "phone": phone}}
+            "options": {"data": {"name": name}}
         })
 
         response_data = {
@@ -42,8 +41,7 @@ def signup():
             "message": "User registered successfully.",
             "user": {
                 "email": email,
-                "name": name,
-                "phone": phone
+                "name": name
             }
         }
         return jsonify(response_data), 200
@@ -80,8 +78,7 @@ def login():
             "message": "Login successful.",
             "user": {
                 "email": user.email if user else None,
-                "name": user.user_metadata.get("name") if user and user.user_metadata else None,
-                "phone": user.user_metadata.get("phone") if user and user.user_metadata else None,
+                "name": user.user_metadata.get("name") if user and user.user_metadata else None
             },
             "auth": {
                 "access_token": session.access_token if session else None,

@@ -37,7 +37,6 @@ def profile():
             "user": {
                 "email": user.user.email,
                 "name": user.user.user_metadata.get("name") if user.user.user_metadata else None,
-                "phone": user.user.user_metadata.get("phone") if user.user.user_metadata else None,
             }
         }
         return jsonify(response_data), 200
