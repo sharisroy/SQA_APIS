@@ -16,8 +16,25 @@ supabase: Client = create_client(url, key)
 
 
 @app.route("/")
+@app.route("/home")
 def home():
-    return jsonify({"message": "API Testing with Supabase!"})
+    response_data = {
+        "success": True,
+        "code": 200,
+        "message": "Congratulations! The Home API endpoint is working successfully.",
+        "details": {
+            "description": "This is your first API response!",
+            "note": "This project is designed to help you practice both manual and automated API testing.",
+            "next_steps": [
+                "Signup → Provide name, phone, email, and password to receive a success registration message.",
+                "Login → Use email and password to log in and receive an access token in the response.",
+                "Profile → Retrieve your profile details using the provided access token."
+            ]
+        }
+    }
+
+    return jsonify(response_data), 200
+
 
 
 @app.route("/signup", methods=["POST"])
