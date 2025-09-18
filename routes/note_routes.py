@@ -118,3 +118,78 @@ def get_all_notes():
 
     except Exception as e:
         return jsonify({"success": False, "code": 400, "error": str(e)}), 400
+
+# -------------------
+# PATCH /note/<id> → Update a note by ID
+# -------------------
+@note_bp.route("/<note_id>", methods=["PATCH"])
+def update_note(note_id):
+    token = request.headers.get("Authorization")
+    data = request.json or {}
+
+    if not token:
+        return jsonify({"success": False, "code": 401, "error": "Missing Authorization header."}), 401
+    if not data.get("note"):
+        return jsonify({"success": False, "code": 400, "error": "Note is required to update."}), 400
+
+    try:
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
+
+        # Validate user
+        user_response = supabase.auth.get_user(token)
+        if not user_response.user:
+            return jsonify({"success": False, "code": 401, "error": "Invalid or expired token."}), 401
+
+        user_id = user_response.user.id
+
+        # Check if the note exists
+        note_resp = supabase.table("notes").select("*").eq("id", note_id).eq("user_id", user_id).execute()
+        note_data = note_resp.data
+
+        if not note_data or len(note_data) == 0:
+            return jsonify({"success": False, "code": 404, "error": "Note not found."}), 404
+
+        # Update the note
+        supabase.table("notes").update({"note": data["note"]}).eq("id", note_id).eq("user_id", user_id).execute()
+
+        return jsonify({"success": True, "code": 200, "message": "Note updated successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "code": 400, "error": str(e)}), 400
+
+# -------------------
+# DELETE /note/<id> → Delete a note by ID
+# -------------------
+@note_bp.route("/<note_id>", methods=["DELETE"])
+def delete_note(note_id):
+    token = request.headers.get("Authorization")
+
+    if not token:
+        return jsonify({"success": False, "code": 401, "error": "Missing Authorization header."}), 401
+
+    try:
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
+
+        # Validate user
+        user_response = supabase.auth.get_user(token)
+        if not user_response.user:
+            return jsonify({"success": False, "code": 401, "error": "Invalid or expired token."}), 401
+
+        user_id = user_response.user.id
+
+        # Check if the note exists
+        note_resp = supabase.table("notes").select("*").eq("id", note_id).eq("user_id", user_id).execute()
+        note_data = note_resp.data
+
+        if not note_data or len(note_data) == 0:
+            return jsonify({"success": False, "code": 404, "error": "Note not found."}), 404
+
+        # Delete the note
+        supabase.table("notes").delete().eq("id", note_id).eq("user_id", user_id).execute()
+
+        return jsonify({"success": True, "code": 200, "message": "Note deleted successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "code": 400, "error": str(e)}), 400
