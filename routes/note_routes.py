@@ -86,12 +86,11 @@ def get_note(note_id):
 
 
 # -------------------
-# GET /note → Get all notes for the authenticated user
+# GET /note → Get all notes for the authenticated user with pagination
 # -------------------
 @note_bp.route("/", methods=["GET"])
 def get_all_notes():
     token = request.headers.get("Authorization")
-
     if not token:
         return jsonify({"success": False, "code": 401, "error": "Missing Authorization header."}), 401
 
@@ -106,15 +105,32 @@ def get_all_notes():
 
         user_id = user_response.user.id
 
-        # Fetch all notes for this user
-        notes_resp = supabase.table("notes").select("*").eq("user_id", user_id).execute()
-        notes_data = notes_resp.data
+        # Pagination parameters
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 10))
+        offset = (page - 1) * per_page
 
-        return jsonify({
+        # Fetch notes for this user with limit & offset
+        notes_resp = (
+            supabase.table("notes")
+            .select("*", count="exact")
+            .eq("user_id", user_id)
+            .range(offset, offset + per_page - 1)
+            .execute()
+        )
+        notes_data = notes_resp.data
+        total_notes = notes_resp.count or 0
+
+        response = {
             "success": True,
             "code": 200,
-            "notes": [{"id": note["id"], "note": note["note"]} for note in notes_data]
-        }), 200
+            "page": page,
+            "per_page": per_page,
+            "total_notes": total_notes,
+            "notes": [{"id": note["id"], "note": note["note"]} for note in notes_data],
+        }
+
+        return jsonify(response), 200
 
     except Exception as e:
         return jsonify({"success": False, "code": 400, "error": str(e)}), 400
