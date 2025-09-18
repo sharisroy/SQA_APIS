@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to API Project</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; background-color: #f7f7f7; }
+        h1, h2 { color: #333; }
+        code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        ul { margin-left: 1rem; }
+        .card { background-color: white; padding: 1rem 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Welcome to Your API Project</h1>
+        <p>This project helps you practice both <strong>manual</strong> and <strong>automated API testing</strong> using Postman.</p>
+    </div>
+
+    <div class="card">
+        <h2>API Endpoints</h2>
+        <ul>
+            <li>
+                <strong>Signup</strong>: <code>POST /signup</code>
+                <p>Request Body (JSON):</p>
+                <pre>{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "your_password"
+}</pre>
+            </li>
+            <li>
+                <strong>Login</strong>: <code>POST /login</code>
+                <p>Request Body (JSON):</p>
+                <pre>{
+    "email": "john@example.com",
+    "password": "your_password"
+}</pre>
+            </li>
+            <li>
+                <strong>Profile</strong>: <code>GET /me</code>
+                <p>Headers:</p>
+                <pre>Authorization: Bearer &lt;access_token&gt;</pre>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Steps to Test in Postman</h2>
+        <ol>
+            <li>Open Postman and create a new request.</li>
+            <li>For Signup/Login, select POST and add JSON body as shown above.</li>
+            <li>Click Send. You should receive a JSON response with your user info and access token.</li>
+            <li>For Profile, select GET, add Authorization header: <code>Bearer &lt;access_token&gt;</code>, then click Send.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Tips</h2>
+        <ul>
+            <li>Keep your <code>access_token</code> safe; it authenticates your requests.</li>
+            <li>All endpoints return JSON with <code>success</code>, <code>code</code>, and <code>message</code>.</li>
+            <li>Use Postman environment variables for <code>access_token</code> to simplify testing multiple requests.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <p>Happy Testing! 🚀</p>
+    </div>
+</body>
+</html>
