@@ -1,20 +1,16 @@
 from datetime import datetime
-import pytz
+from zoneinfo import ZoneInfo
+
 
 def get_server_time():
-    """
-    Returns current server time in UTC.
-    """
+    """Returns the server's local time in UTC."""
     return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
-def get_real_time(timezone="Asia/Dhaka"):
-    """
-    Returns current local time based on provided timezone.
-    Default: Asia/Dhaka
-    """
+
+def get_real_time(timezone_str="Asia/Dhaka"):
+    """Returns real time for a given timezone (default: Dhaka)."""
     try:
-        tz = pytz.timezone(timezone)
+        tz = ZoneInfo(timezone_str)
         return datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S %Z")
     except Exception:
-        # fallback in case timezone is invalid
-        return datetime.now().strftime("%Y-%m-%d %H:%M:%S Local")
+        return "Invalid timezone"
