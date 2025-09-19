@@ -39,16 +39,27 @@ def get_user_from_token(token: str):
 def add_note():
     token = request.headers.get("Authorization")
     data = request.json or {}
-    if not data.get("note"):
-        return format_error("Note is required.", 400)
+
+    if not data.get("note") or not data.get("title"):
+        return format_error("Title and Note are required.", 400)
 
     user_id, error = get_user_from_token(token)
     if error: return error
 
     note_id = str(uuid.uuid4())
     try:
-        supabase.table("notes").insert({"id": note_id, "user_id": user_id, "note": data["note"]}).execute()
-        return jsonify({"success": True, "code": 200, "message": "Note added successfully.", "note_id": note_id}), 200
+        supabase.table("notes").insert({
+            "id": note_id,
+            "user_id": user_id,
+            "title": data["title"],
+            "note": data["note"]
+        }).execute()
+        return jsonify({
+            "success": True,
+            "code": 200,
+            "message": "Note added successfully.",
+            "note_id": note_id
+        }), 200
     except Exception as e:
         return format_error(str(e), 400)
 
@@ -67,7 +78,15 @@ def get_note(note_id):
         if not note_resp.data:
             return format_error("Note not found.", 404)
         note = note_resp.data[0]
-        return jsonify({"success": True, "code": 200, "note": {"id": note["id"], "note": note["note"]}}), 200
+        return jsonify({
+            "success": True,
+            "code": 200,
+            "note": {
+                "id": note["id"],
+                "title": note.get("title"),
+                "note": note["note"]
+            }
+        }), 200
     except Exception as e:
         return format_error(str(e), 400)
 
@@ -86,7 +105,10 @@ def get_all_notes():
         per_page = max(int(request.args.get("per_page", 10)), 1)
         offset = (page - 1) * per_page
 
-        notes_resp = supabase.table("notes").select("*", count="exact").eq("user_id", user_id).range(offset, offset + per_page - 1).execute()
+        notes_resp = supabase.table("notes").select("*", count="exact")\
+            .eq("user_id", user_id)\
+            .range(offset, offset + per_page - 1).execute()
+
         notes_data = notes_resp.data or []
         total_notes = notes_resp.count or 0
 
@@ -96,7 +118,7 @@ def get_all_notes():
             "page": page,
             "per_page": per_page,
             "total_notes": total_notes,
-            "notes": [{"id": note["id"], "note": note["note"]} for note in notes_data]
+            "notes": [{"id": note["id"], "title": note.get("title"), "note": note["note"]} for note in notes_data]
         }
         return jsonify(response), 200
     except Exception as e:
@@ -110,8 +132,8 @@ def get_all_notes():
 def update_note(note_id):
     token = request.headers.get("Authorization")
     data = request.json or {}
-    if not data.get("note"):
-        return format_error("Note is required to update.", 400)
+    if not data.get("note") or not data.get("title"):
+        return format_error("Title and Note are required to update.", 400)
 
     user_id, error = get_user_from_token(token)
     if error: return error
@@ -121,7 +143,10 @@ def update_note(note_id):
         if not note_resp.data:
             return format_error("Note not found.", 404)
 
-        supabase.table("notes").update({"note": data["note"]}).eq("id", note_id).eq("user_id", user_id).execute()
+        supabase.table("notes").update({
+            "title": data["title"],
+            "note": data["note"]
+        }).eq("id", note_id).eq("user_id", user_id).execute()
         return jsonify({"success": True, "code": 200, "message": "Note updated successfully."}), 200
     except Exception as e:
         return format_error(str(e), 400)
