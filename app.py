@@ -4,14 +4,12 @@ from routes.home_routes import home_bp
 from routes.auth_routes import auth_bp
 from routes.profile_routes import profile_bp
 from routes.note_routes import note_bp
-from routes.secure_auth import secure_auth_bp
 
 app = Flask(__name__)
 
 # Register blueprints
 app.register_blueprint(home_bp)                 # for / and /home
 app.register_blueprint(auth_bp, url_prefix="/auth")
-app.register_blueprint(secure_auth_bp, url_prefix="/auth/secure")
 app.register_blueprint(profile_bp, url_prefix="/profile")
 
 app.register_blueprint(note_bp, url_prefix="/note")
