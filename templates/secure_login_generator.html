@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted Payload Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsencrypt@3.3.2/bin/jsencrypt.min.js"></script>
+    <style>
+        /* ... (keep all the existing styles the same) ... */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ... (keep all the existing HTML structure the same) ... -->
+    </div>
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // Show alert message
+        function showAlert(message, type = 'error') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // Fetch Public Key
+        document.getElementById('fetchPublicKeyBtn').addEventListener('click', function() {
+            const keyUrl = prompt('Enter the URL to fetch the public key from:', 'http://127.0.0.1:5001/auth/public-key');
+
+            if (keyUrl) {
+                fetch(keyUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(keyData => {
+                        document.getElementById('public-key').value = keyData;
+                        showAlert('Public key fetched successfully!', 'success');
+                    })
+                    .catch(error => {
+                        showAlert('Error fetching public key: ' + error.message);
+                        console.error('Error:', error);
+                    });
+            }
+        });
+
+        // Fetch Private Key
+        document.getElementById('fetchPrivateKeyBtn').addEventListener('click', function() {
+            const keyUrl = prompt('Enter the URL to fetch the private key from:', 'http://127.0.0.1:5001/auth/client_private_key');
+
+            if (keyUrl) {
+                fetch(keyUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(keyData => {
+                        document.getElementById('private-key').value = keyData;
+                        showAlert('Private key fetched successfully!', 'success');
+                    })
+                    .catch(error => {
+                        showAlert('Error fetching private key: ' + error.message);
+                        console.error('Error:', error);
+                    });
+            }
+        });
+
+        // Generate encrypted payload with signature
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const publicKey = document.getElementById('public-key').value;
+            const privateKey = document.getElementById('private-key').value;
+
+            if (!email || !password) {
+                showAlert('Please enter both email and password');
+                return;
+            }
+
+            if (!publicKey || !publicKey.includes('BEGIN PUBLIC KEY')) {
+                showAlert('Please enter a valid public key in PEM format');
+                return;
+            }
+
+            if (!privateKey || !privateKey.includes('BEGIN PRIVATE KEY')) {
+                showAlert('Please enter a valid private key in PEM format for signing');
+                return;
+            }
+
+            // Create the payload object
+            const payload = {
+                email: email,
+                password: password
+            };
+
+            const payloadString = JSON.stringify(payload);
+
+            // Display original payload
+            document.getElementById('original-payload').textContent = payloadString;
+
+            try {
+                // Encrypt the payload with server's public key
+                const encrypt = new JSEncrypt();
+                encrypt.setPublicKey(publicKey);
+                const encrypted = encrypt.encrypt(payloadString);
+
+                if (!encrypted) {
+                    throw new Error('Encryption failed. Check your public key format.');
+                }
+
+                // Display encrypted payload
+                document.getElementById('encrypted-payload').textContent = encrypted;
+
+                // Create signature using Web Crypto API
+                const signature = await createSignature(payloadString, privateKey);
+
+                if (!signature) {
+                    throw new Error('Signature creation failed. Check your private key format.');
+                }
+
+                // Convert signature to base64 for easier transmission
+                const signatureBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(signature)));
+
+                // Display signature
+                document.getElementById('signature').textContent = signatureBase64;
+
+                // Create the request body for Postman
+                const requestBody = {
+                    payload: encrypted,
+                    signature: signatureBase64
+                };
+
+                document.getElementById('request-body').textContent = JSON.stringify(requestBody, null, 2);
+
+                showAlert('Payload encrypted and signed successfully!', 'success');
+            } catch (error) {
+                showAlert('Error: ' + error.message);
+                console.error(error);
+            }
+        });
+
+        // Create signature using Web Crypto API
+        async function createSignature(data, privateKeyPem) {
+            try {
+                // Convert PEM to ArrayBuffer
+                const pemHeader = "-----BEGIN PRIVATE KEY-----";
+                const pemFooter = "-----END PRIVATE KEY-----";
+                const pemContents = privateKeyPem.substring(
+                    privateKeyPem.indexOf(pemHeader) + pemHeader.length,
+                    privateKeyPem.indexOf(pemFooter)
+                ).replace(/\s/g, '');
+
+                const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+
+                // Import the private key
+                const privateKey = await crypto.subtle.importKey(
+                    "pkcs8",
+                    binaryDer,
+                    {
+                        name: "RSASSA-PKCS1-v1_5",
+                        hash: "SHA-256"
+                    },
+                    false,
+                    ["sign"]
+                );
+
+                // Sign the data
+                const encoder = new TextEncoder();
+                const dataBuffer = encoder.encode(data);
+                const signatureBuffer = await crypto.subtle.sign(
+                    "RSASSA-PKCS1-v1_5",
+                    privateKey,
+                    dataBuffer
+                );
+
+                return signatureBuffer;
+            } catch (error) {
+                console.error('Signature creation error:', error);
+                return null;
+            }
+        }
+
+        // Copy to clipboard
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const outputText = document.getElementById('request-body').textContent;
+
+            if (outputText === 'Request body will appear here...') {
+                showAlert('Please generate a payload first');
+                return;
+            }
+
+            // Create a temporary textarea to copy from
+            const textarea = document.createElement('textarea');
+            textarea.value = outputText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            // Provide visual feedback
+            showAlert('Request body copied to clipboard!', 'success');
+
+            const originalText = this.textContent;
+            this.textContent = 'Copied!';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
