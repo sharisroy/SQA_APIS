@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SQA API Project Documentation</title>
 <style>
+    /* Base styles */
     body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -12,7 +13,8 @@
         display: flex;
         min-height: 100vh;
         overflow-x: hidden;
-    /*}*/
+    }
+
     /* Sidebar */
     .sidebar {
         width: 250px;
@@ -23,6 +25,7 @@
         padding-top: 20px;
         transition: transform 0.3s ease;
     }
+
     .sidebar h2 {
         text-align: center;
         margin-bottom: 20px;
@@ -30,12 +33,15 @@
         border-bottom: 1px solid rgba(255,255,255,0.3);
         padding-bottom: 10px;
     }
+
     .menu-item {
         padding: 15px 20px;
         cursor: pointer;
         transition: background 0.3s, color 0.3s;
     }
-    .menu-item:hover, .menu-item.active {
+
+    .menu-item:hover,
+    .menu-item.active {
         background-color: #34495e;
         color: #1abc9c;
     }
@@ -64,24 +70,40 @@
         background-color: #ecf0f1;
         transition: all 0.4s ease;
     }
+
     .card {
         background-color: white;
-        padding: 1rem 2rem;
+        padding: 1.5rem 2rem;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         margin-bottom: 20px;
         opacity: 1;
         transition: opacity 0.4s ease;
     }
+
     pre {
         background-color: #f4f4f4;
         padding: 10px;
         border-radius: 5px;
         overflow-x: auto;
     }
-    code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
 
-    h3 { margin-top: 1rem; }
+    code {
+        background-color: #f4f4f4;
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+
+    h3 {
+        margin-top: 1rem;
+    }
+
+    hr {
+        border: 0;
+        height: 1px;
+        background-color: #ddd;
+        margin: 20px 0;
+    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -91,12 +113,15 @@
             transform: translateX(-260px);
             z-index: 999;
         }
+
         .sidebar.show {
             transform: translateX(0);
         }
+
         .sidebar-toggle {
             display: block;
         }
+
         .content {
             padding: 20px;
         }
@@ -105,8 +130,10 @@
 </head>
 <body>
 
+<!-- Mobile Menu Button -->
 <button class="sidebar-toggle">Menu</button>
 
+<!-- Sidebar -->
 <div class="sidebar">
     <h2>SQA Learning Free APIs</h2>
     <div class="menu-item active" data-section="home">Home</div>
@@ -116,7 +143,9 @@
     <div class="menu-item" data-section="notes">Notes</div>
 </div>
 
+<!-- Main Content -->
 <div class="content">
+
     <!-- Home -->
     <div class="card section" id="home">
         <h1>Welcome to SQA API</h1>
@@ -124,20 +153,20 @@
 
         <h3>Topics Covered:</h3>
         <ul>
-            <li><strong>REST API Concepts:</strong> Endpoints, methods (GET, POST, PATCH, DELETE), headers, query params, status codes.</li>
+            <li><strong>REST API Concepts:</strong> Endpoints, methods, headers, query params, status codes.</li>
             <li><strong>User Authentication:</strong> Signup, login, token-based access, expired/invalid token handling.</li>
             <li><strong>Profile Management:</strong> CRUD operations, response validation, schema checks.</li>
-            <li><strong>Notes API:</strong> CRUD notes, pagination, validation for required fields.</li>
+            <li><strong>Notes API:</strong> CRUD notes, pagination, required field validation.</li>
             <li><strong>Response Validation:</strong> Status codes, JSON schema, error messages.</li>
-            <li><strong>Positive & Negative Testing:</strong> Valid and invalid input testing.</li>
-            <li><strong>SQA Perspectives:</strong> Maintainability, reliability, performance, security checks, edge cases.</li>
+            <li><strong>Positive & Negative Testing:</strong> Valid and invalid input scenarios.</li>
+            <li><strong>SQA Perspectives:</strong> Maintainability, reliability, performance, security checks.</li>
             <li><strong>Automation Testing:</strong> Postman collections, environment variables, scripts, test suites.</li>
-            <li><strong>Reporting & Debugging:</strong> Logging, debugging, Postman console, Supabase logs.</li>
+            <li><strong>Reporting & Debugging:</strong> Logging, Postman console, Supabase logs.</li>
         </ul>
 
         <h3>Learning Outcomes:</h3>
         <ul>
-            <li>Test APIs manually and validate all scenarios.</li>
+            <li>Test APIs manually and validate scenarios.</li>
             <li>Understand SQA best practices for API quality assurance.</li>
             <li>Write automated API test scripts using Postman.</li>
             <li>Validate responses, perform security and performance testing.</li>
@@ -164,12 +193,6 @@
         "name": "John Doe"
     }
 }</pre>
-        <p><strong>Postman Instructions:</strong> Select POST, add JSON body, click Send.</p>
-
-        <h4>Pre-request Script:</h4>
-        <pre>
-        </pre>
-
         <h4>Tests Script:</h4>
         <pre>
 // Validate response
@@ -195,12 +218,6 @@ pm.test("Success true", () => pm.expect(pm.response.json().success).to.eql(true)
     "user": { "email": "john@example.com", "name": "John Doe" },
     "auth": { "access_token": "xxxxxx", "expires_at": 1690000000 }
 }</pre>
-        <p><strong>Postman Instructions:</strong> Select POST, add JSON body, click Send.</p>
-
-        <h4>Pre-request Script:</h4>
-        <pre>
-        </pre>
-
         <h4>Tests Script:</h4>
         <pre>
 // Check success & store token
@@ -225,13 +242,6 @@ if(jsonData.auth && jsonData.auth.access_token){
     "message": "Profile retrieved successfully.",
     "user": { "email": "john@example.com", "name": "John Doe" }
 }</pre>
-        <p><strong>Postman Instructions:</strong> Select GET, add Authorization header, click Send.</p>
-
-        <h4>Pre-request Script:</h4>
-        <pre>
-// No specific script needed, just ensure token is set
-        </pre>
-
         <h4>Tests Script:</h4>
         <pre>
 // Validate profile response
@@ -251,27 +261,25 @@ pm.test("User email present", () => pm.expect(jsonData.user.email).to.exist);
         <pre>Authorization: Bearer &lt;access_token&gt;</pre>
         <p><strong>Request Body:</strong></p>
         <pre>{
-    "note": "Buy groceries"
+    "title": "Meeting Notes",
+    "note": "Project kickoff scheduled for Monday."
 }</pre>
         <p><strong>Response Example:</strong></p>
         <pre>{
     "success": true,
     "code": 200,
-    "message": "Note added successfully.",
-    "note_id": "uuid-generated"
+    "note": { "id": "uuid-generated", "title": "Meeting Notes" }
 }</pre>
-        <p><strong>Postman Instructions:</strong> Select POST, add Authorization & JSON body, click Send.</p>
-
-        <h4>Pre-request Script:</h4>
-        <pre>
-        </pre>
-
         <h4>Tests Script:</h4>
         <pre>
 var jsonData = pm.response.json();
 pm.test("Note added", () => pm.expect(jsonData.success).to.eql(true));
-if(jsonData.note_id) pm.environment.set("note_id", jsonData.note_id);
+if(jsonData.note && jsonData.note.id){
+    pm.environment.set("note_id", jsonData.note.id);
+}
         </pre>
+
+        <hr>
 
         <h3>Get Note by ID</h3>
         <p><strong>Endpoint:</strong> GET /note/&lt;note_id&gt;</p>
@@ -281,16 +289,18 @@ if(jsonData.note_id) pm.environment.set("note_id", jsonData.note_id);
         <pre>{
     "success": true,
     "code": 200,
-    "note": { "id": "uuid-generated", "note": "Buy groceries" }
+    "note": { "title": "Meeting Notes", "note": "Project kickoff scheduled for Monday." }
 }</pre>
-        <p><strong>Tests Script:</strong></p>
+        <h4>Tests Script:</h4>
         <pre>
 var jsonData = pm.response.json();
 pm.test("Note retrieved", () => pm.expect(jsonData.success).to.eql(true));
-pm.test("Note id matches", () => pm.expect(jsonData.note.id).to.eql(pm.environment.get("note_id")));
+pm.test("Note title present", () => pm.expect(jsonData.note.title).to.exist);
         </pre>
 
-        <h3>Get All Notes</h3>
+        <hr>
+
+        <h3>Get All Notes (with pagination)</h3>
         <p><strong>Endpoint:</strong> GET /note?page=1&per_page=10</p>
         <p><strong>Headers:</strong></p>
         <pre>Authorization: Bearer &lt;access_token&gt;</pre>
@@ -302,16 +312,18 @@ pm.test("Note id matches", () => pm.expect(jsonData.note.id).to.eql(pm.environme
     "per_page": 10,
     "total_notes": 5,
     "notes": [
-        { "id": "uuid1", "note": "Buy groceries" },
-        { "id": "uuid2", "note": "Pay bills" }
+        { "id": "uuid1", "title": "Meeting Notes" },
+        { "id": "uuid2", "title": "Shopping List" }
     ]
 }</pre>
-        <p><strong>Tests Script:</strong></p>
+        <h4>Tests Script:</h4>
         <pre>
 var jsonData = pm.response.json();
 pm.test("Success true", () => pm.expect(jsonData.success).to.eql(true));
 pm.test("Notes array exists", () => pm.expect(jsonData.notes).to.be.an("array"));
         </pre>
+
+        <hr>
 
         <h3>Update Note</h3>
         <p><strong>Endpoint:</strong> PATCH /note/&lt;note_id&gt;</p>
@@ -319,19 +331,27 @@ pm.test("Notes array exists", () => pm.expect(jsonData.notes).to.be.an("array"))
         <pre>Authorization: Bearer &lt;access_token&gt;</pre>
         <p><strong>Request Body:</strong></p>
         <pre>{
-    "note": "Updated note text"
+    "title": "Updated Meeting Notes",
+    "note": "Rescheduled to Tuesday at 3 PM."
 }</pre>
-        <p><strong>Tests Script:</strong></p>
+        <h4>Tests Script:</h4>
         <pre>
 var jsonData = pm.response.json();
 pm.test("Note updated", () => pm.expect(jsonData.success).to.eql(true));
         </pre>
 
+        <hr>
+
         <h3>Delete Note</h3>
         <p><strong>Endpoint:</strong> DELETE /note/&lt;note_id&gt;</p>
         <p><strong>Headers:</strong></p>
         <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Tests Script:</strong></p>
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200
+}</pre>
+        <h4>Tests Script:</h4>
         <pre>
 var jsonData = pm.response.json();
 pm.test("Note deleted", () => pm.expect(jsonData.success).to.eql(true));
@@ -352,13 +372,9 @@ pm.test("Note deleted", () => pm.expect(jsonData.success).to.eql(true));
 
             const target = item.dataset.section;
             sections.forEach(sec => {
-                if (sec.id === target) {
-                    sec.style.display = "block";
-                    sec.style.opacity = 0;
-                    setTimeout(() => sec.style.opacity = 1, 50);
-                } else {
-                    sec.style.display = "none";
-                }
+                sec.style.display = sec.id === target ? "block" : "none";
+                if(sec.id === target) sec.style.opacity = 0;
+                setTimeout(() => { if(sec.id === target) sec.style.opacity = 1; }, 50);
             });
 
             if (window.innerWidth <= 768) sidebar.classList.remove("show");
