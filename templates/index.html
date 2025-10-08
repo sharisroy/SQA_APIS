@@ -12,8 +12,7 @@
         display: flex;
         min-height: 100vh;
         overflow-x: hidden;
-    }
-
+    /*}*/
     /* Sidebar */
     .sidebar {
         width: 250px;
@@ -148,7 +147,7 @@
     <!-- Signup -->
     <div class="card section" id="signup" style="display:none;">
         <h2>Signup API</h2>
-        <p><strong>Endpoint:</strong> POST /signup</p>
+        <p><strong>Endpoint:</strong> POST auth/signup</p>
         <p><strong>Request Body (JSON):</strong></p>
         <pre>{
     "name": "John Doe",
@@ -182,7 +181,7 @@ pm.test("Success true", () => pm.expect(pm.response.json().success).to.eql(true)
     <!-- Login -->
     <div class="card section" id="login" style="display:none;">
         <h2>Login API</h2>
-        <p><strong>Endpoint:</strong> POST /login</p>
+        <p><strong>Endpoint:</strong> POST auth/login</p>
         <p><strong>Request Body (JSON):</strong></p>
         <pre>{
     "email": "john@example.com",
@@ -216,7 +215,7 @@ if(jsonData.auth && jsonData.auth.access_token){
     <!-- Profile -->
     <div class="card section" id="profile" style="display:none;">
         <h2>Profile API</h2>
-        <p><strong>Endpoint:</strong> GET /me</p>
+        <p><strong>Endpoint:</strong> GET profile/me</p>
         <p><strong>Headers:</strong></p>
         <pre>Authorization: Bearer &lt;access_token&gt;</pre>
         <p><strong>Response Example:</strong></p>
