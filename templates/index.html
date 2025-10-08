@@ -5,31 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SQA API Project Documentation</title>
 <style>
-    /* Base styles */
+    /* Reset & Base */
+    * {
+        box-sizing: border-box;
+    }
     body {
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
-        background-color: #f7f7f7;
         display: flex;
         min-height: 100vh;
+        background-color: #f4f7fa;
+        color: #333;
         overflow-x: hidden;
     }
 
     /* Sidebar */
     .sidebar {
-        width: 250px;
+        width: 260px;
         background-color: #2c3e50;
-        color: white;
+        color: #fff;
         display: flex;
         flex-direction: column;
         padding-top: 20px;
         transition: transform 0.3s ease;
+        flex-shrink: 0;
     }
 
     .sidebar h2 {
         text-align: center;
         margin-bottom: 20px;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         border-bottom: 1px solid rgba(255,255,255,0.3);
         padding-bottom: 10px;
     }
@@ -60,49 +65,55 @@
         border-radius: 5px;
         z-index: 1000;
         cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* Content area */
+    /* Main content */
     .content {
         flex: 1;
         padding: 30px;
         overflow-y: auto;
-        background-color: #ecf0f1;
         transition: all 0.4s ease;
     }
 
     .card {
-        background-color: white;
-        padding: 1.5rem 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-        opacity: 1;
-        transition: opacity 0.4s ease;
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
 
     pre {
-        background-color: #f4f4f4;
-        padding: 10px;
-        border-radius: 5px;
+        background-color: #f0f0f0;
+        padding: 12px;
+        border-radius: 6px;
         overflow-x: auto;
     }
 
     code {
-        background-color: #f4f4f4;
+        background-color: #f0f0f0;
         padding: 2px 5px;
-        border-radius: 3px;
+        border-radius: 4px;
     }
 
-    h3 {
-        margin-top: 1rem;
+    h1, h2, h3, h4 {
+        margin-top: 0;
     }
 
+    h3 { margin-top: 1.2rem; }
+    h4 { margin-top: 0.8rem; }
     hr {
-        border: 0;
+        border: none;
         height: 1px;
         background-color: #ddd;
-        margin: 20px 0;
+        margin: 25px 0;
     }
 
     /* Responsive */
@@ -110,18 +121,15 @@
         .sidebar {
             position: fixed;
             height: 100%;
-            transform: translateX(-260px);
+            transform: translateX(-270px);
             z-index: 999;
         }
-
         .sidebar.show {
             transform: translateX(0);
         }
-
         .sidebar-toggle {
             display: block;
         }
-
         .content {
             padding: 20px;
         }
@@ -130,7 +138,7 @@
 </head>
 <body>
 
-<!-- Mobile Menu Button -->
+<!-- Sidebar Toggle for Mobile -->
 <button class="sidebar-toggle">Menu</button>
 
 <!-- Sidebar -->
@@ -146,7 +154,7 @@
 <!-- Main Content -->
 <div class="content">
 
-    <!-- Home -->
+    <!-- Home Section -->
     <div class="card section" id="home">
         <h1>Welcome to SQA API</h1>
         <p>This project is designed for practicing <strong>API testing</strong>, including both <strong>manual</strong> and <strong>automated testing</strong> with Postman.</p>
@@ -173,11 +181,11 @@
         </ul>
     </div>
 
-    <!-- Signup -->
+    <!-- Signup Section -->
     <div class="card section" id="signup" style="display:none;">
         <h2>Signup API</h2>
         <p><strong>Endpoint:</strong> POST auth/signup</p>
-        <p><strong>Request Body (JSON):</strong></p>
+        <p><strong>Request Body:</strong></p>
         <pre>{
     "name": "John Doe",
     "email": "john@example.com",
@@ -195,17 +203,16 @@
 }</pre>
         <h4>Tests Script:</h4>
         <pre>
-// Validate response
 pm.test("Status 200", () => pm.response.to.have.status(200));
 pm.test("Success true", () => pm.expect(pm.response.json().success).to.eql(true));
         </pre>
     </div>
 
-    <!-- Login -->
+    <!-- Login Section -->
     <div class="card section" id="login" style="display:none;">
         <h2>Login API</h2>
         <p><strong>Endpoint:</strong> POST auth/login</p>
-        <p><strong>Request Body (JSON):</strong></p>
+        <p><strong>Request Body:</strong></p>
         <pre>{
     "email": "john@example.com",
     "password": "your_password"
@@ -220,7 +227,6 @@ pm.test("Success true", () => pm.expect(pm.response.json().success).to.eql(true)
 }</pre>
         <h4>Tests Script:</h4>
         <pre>
-// Check success & store token
 var jsonData = pm.response.json();
 pm.test("Login success", () => pm.expect(jsonData.success).to.eql(true));
 if(jsonData.auth && jsonData.auth.access_token){
@@ -229,7 +235,7 @@ if(jsonData.auth && jsonData.auth.access_token){
         </pre>
     </div>
 
-    <!-- Profile -->
+    <!-- Profile Section -->
     <div class="card section" id="profile" style="display:none;">
         <h2>Profile API</h2>
         <p><strong>Endpoint:</strong> GET profile/me</p>
@@ -244,17 +250,17 @@ if(jsonData.auth && jsonData.auth.access_token){
 }</pre>
         <h4>Tests Script:</h4>
         <pre>
-// Validate profile response
 var jsonData = pm.response.json();
 pm.test("Status 200", () => pm.response.to.have.status(200));
 pm.test("User email present", () => pm.expect(jsonData.user.email).to.exist);
         </pre>
     </div>
 
-    <!-- Notes -->
+    <!-- Notes Section -->
     <div class="card section" id="notes" style="display:none;">
         <h2>Notes APIs</h2>
 
+        <!-- Add Note -->
         <h3>Add Note</h3>
         <p><strong>Endpoint:</strong> POST /note</p>
         <p><strong>Headers:</strong></p>
@@ -281,6 +287,7 @@ if(jsonData.note && jsonData.note.id){
 
         <hr>
 
+        <!-- Get Note by ID -->
         <h3>Get Note by ID</h3>
         <p><strong>Endpoint:</strong> GET /note/&lt;note_id&gt;</p>
         <p><strong>Headers:</strong></p>
@@ -289,7 +296,11 @@ if(jsonData.note && jsonData.note.id){
         <pre>{
     "success": true,
     "code": 200,
-    "note": { "title": "Meeting Notes", "note": "Project kickoff scheduled for Monday." }
+    "note": {
+        "id": "uuid-generated",
+        "title": "Meeting Notes",
+        "note": "Project kickoff scheduled for Monday."
+    }
 }</pre>
         <h4>Tests Script:</h4>
         <pre>
@@ -300,6 +311,7 @@ pm.test("Note title present", () => pm.expect(jsonData.note.title).to.exist);
 
         <hr>
 
+        <!-- Get All Notes -->
         <h3>Get All Notes (with pagination)</h3>
         <p><strong>Endpoint:</strong> GET /note?page=1&per_page=10</p>
         <p><strong>Headers:</strong></p>
@@ -325,6 +337,7 @@ pm.test("Notes array exists", () => pm.expect(jsonData.notes).to.be.an("array"))
 
         <hr>
 
+        <!-- Update Note -->
         <h3>Update Note</h3>
         <p><strong>Endpoint:</strong> PATCH /note/&lt;note_id&gt;</p>
         <p><strong>Headers:</strong></p>
@@ -334,14 +347,27 @@ pm.test("Notes array exists", () => pm.expect(jsonData.notes).to.be.an("array"))
     "title": "Updated Meeting Notes",
     "note": "Rescheduled to Tuesday at 3 PM."
 }</pre>
+        <p><strong>Response Example:</strong></p>
+        <pre>{
+    "success": true,
+    "code": 200,
+    "note": {
+        "id": "uuid-generated",
+        "title": "Updated Meeting Notes",
+        "note": "Rescheduled to Tuesday at 3 PM."
+    }
+}</pre>
         <h4>Tests Script:</h4>
         <pre>
 var jsonData = pm.response.json();
 pm.test("Note updated", () => pm.expect(jsonData.success).to.eql(true));
+pm.test("Updated title matches", () => pm.expect(jsonData.note.title).to.eql("Updated Meeting Notes"));
+pm.test("Updated note matches", () => pm.expect(jsonData.note.note).to.eql("Rescheduled to Tuesday at 3 PM."));
         </pre>
 
         <hr>
 
+        <!-- Delete Note -->
         <h3>Delete Note</h3>
         <p><strong>Endpoint:</strong> DELETE /note/&lt;note_id&gt;</p>
         <p><strong>Headers:</strong></p>
@@ -357,8 +383,10 @@ var jsonData = pm.response.json();
 pm.test("Note deleted", () => pm.expect(jsonData.success).to.eql(true));
         </pre>
     </div>
+
 </div>
 
+<!-- JS for sidebar toggle & menu -->
 <script>
     const menuItems = document.querySelectorAll(".menu-item");
     const sections = document.querySelectorAll(".section");
@@ -374,7 +402,7 @@ pm.test("Note deleted", () => pm.expect(jsonData.success).to.eql(true));
             sections.forEach(sec => {
                 sec.style.display = sec.id === target ? "block" : "none";
                 if(sec.id === target) sec.style.opacity = 0;
-                setTimeout(() => { if(sec.id === target) sec.style.opacity = 1; }, 50);
+                if(sec.id === target) setTimeout(() => sec.style.opacity = 1, 50);
             });
 
             if (window.innerWidth <= 768) sidebar.classList.remove("show");
