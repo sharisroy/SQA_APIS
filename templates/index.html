@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SQA API Project Documentation</title>
 <style>
-    /* Reset & Base */
-    * {
-        box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
@@ -18,8 +15,6 @@
         color: #333;
         overflow-x: hidden;
     }
-
-    /* Sidebar */
     .sidebar {
         width: 260px;
         background-color: #2c3e50;
@@ -30,7 +25,6 @@
         transition: transform 0.3s ease;
         flex-shrink: 0;
     }
-
     .sidebar h2 {
         text-align: center;
         margin-bottom: 20px;
@@ -38,20 +32,13 @@
         border-bottom: 1px solid rgba(255,255,255,0.3);
         padding-bottom: 10px;
     }
-
     .menu-item {
         padding: 15px 20px;
         cursor: pointer;
         transition: background 0.3s, color 0.3s;
     }
-
     .menu-item:hover,
-    .menu-item.active {
-        background-color: #34495e;
-        color: #1abc9c;
-    }
-
-    /* Mobile toggle button */
+    .menu-item.active { background-color: #34495e; color: #1abc9c; }
     .sidebar-toggle {
         display: none;
         position: fixed;
@@ -67,15 +54,12 @@
         cursor: pointer;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-
-    /* Main content */
     .content {
         flex: 1;
         padding: 30px;
         overflow-y: auto;
         transition: all 0.4s ease;
     }
-
     .card {
         background-color: #fff;
         padding: 2rem;
@@ -84,114 +68,52 @@
         margin-bottom: 25px;
         transition: transform 0.3s, box-shadow 0.3s;
     }
-
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    }
-
-    pre {
-        background-color: #f0f0f0;
-        padding: 12px;
-        border-radius: 6px;
-        overflow-x: auto;
-    }
-
-    code {
-        background-color: #f0f0f0;
-        padding: 2px 5px;
-        border-radius: 4px;
-    }
-
-    h1, h2, h3, h4 {
-        margin-top: 0;
-    }
-
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+    pre { background-color: #f0f0f0; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    code { background-color: #f0f0f0; padding: 2px 5px; border-radius: 4px; }
+    h1,h2,h3,h4 { margin-top: 0; }
     h3 { margin-top: 1.2rem; }
     h4 { margin-top: 0.8rem; }
-    hr {
-        border: none;
-        height: 1px;
-        background-color: #ddd;
-        margin: 25px 0;
-    }
-
-    /* Responsive */
+    hr { border: none; height: 1px; background-color: #ddd; margin: 25px 0; }
+    .section-info { margin-bottom: 1rem; font-size: 0.95rem; color: #555; }
+    ul { padding-left: 1.2rem; }
+    li { margin-bottom: 5px; }
     @media (max-width: 768px) {
-        .sidebar {
-            position: fixed;
-            height: 100%;
-            transform: translateX(-270px);
-            z-index: 999;
-        }
-        .sidebar.show {
-            transform: translateX(0);
-        }
-        .sidebar-toggle {
-            display: block;
-        }
-        .content {
-            padding: 20px;
-        }
+        .sidebar { position: fixed; height: 100%; transform: translateX(-270px); z-index: 999; }
+        .sidebar.show { transform: translateX(0); }
+        .sidebar-toggle { display: block; }
+        .content { padding: 20px; }
     }
 </style>
 </head>
 <body>
 
-<!-- Sidebar Toggle for Mobile -->
 <button class="sidebar-toggle">Menu</button>
 
-<!-- Sidebar -->
 <div class="sidebar">
-    <h2>SQA Learning Free APIs</h2>
-    <div class="menu-item active" data-section="home">Home</div>
-    <div class="menu-item" data-section="signup">Signup</div>
+    <h2>SQA Auth APIs</h2>
+    <div class="menu-item active" data-section="signup">Signup</div>
     <div class="menu-item" data-section="login">Login</div>
     <div class="menu-item" data-section="profile">Profile</div>
     <div class="menu-item" data-section="notes">Notes</div>
 </div>
 
-<!-- Main Content -->
 <div class="content">
 
-    <!-- Home Section -->
-    <div class="card section" id="home">
-        <h1>Welcome to SQA API</h1>
-        <p>This project is designed for practicing <strong>API testing</strong>, including both <strong>manual</strong> and <strong>automated testing</strong> with Postman.</p>
-
-        <h3>Topics Covered:</h3>
-        <ul>
-            <li><strong>REST API Concepts:</strong> Endpoints, methods, headers, query params, status codes.</li>
-            <li><strong>User Authentication:</strong> Signup, login, token-based access, expired/invalid token handling.</li>
-            <li><strong>Profile Management:</strong> CRUD operations, response validation, schema checks.</li>
-            <li><strong>Notes API:</strong> CRUD notes, pagination, required field validation.</li>
-            <li><strong>Response Validation:</strong> Status codes, JSON schema, error messages.</li>
-            <li><strong>Positive & Negative Testing:</strong> Valid and invalid input scenarios.</li>
-            <li><strong>SQA Perspectives:</strong> Maintainability, reliability, performance, security checks.</li>
-            <li><strong>Automation Testing:</strong> Postman collections, environment variables, scripts, test suites.</li>
-            <li><strong>Reporting & Debugging:</strong> Logging, Postman console, Supabase logs.</li>
-        </ul>
-
-        <h3>Learning Outcomes:</h3>
-        <ul>
-            <li>Test APIs manually and validate scenarios.</li>
-            <li>Understand SQA best practices for API quality assurance.</li>
-            <li>Write automated API test scripts using Postman.</li>
-            <li>Validate responses, perform security and performance testing.</li>
-        </ul>
-    </div>
-
-    <!-- Signup Section -->
-    <div class="card section" id="signup" style="display:none;">
+    <!-- Signup -->
+    <div class="card section" id="signup">
         <h2>Signup API</h2>
-        <p><strong>Endpoint:</strong> POST auth/signup</p>
-        <p><strong>Request Body:</strong></p>
+        <p class="section-info"><strong>Endpoint:</strong> POST <code>/auth/signup</code></p>
+        <p class="section-info"><strong>Headers:</strong> Content-Type: application/json</p>
+
+        <h3>Request Body</h3>
         <pre>{
     "name": "John Doe",
     "email": "john@example.com",
     "password": "your_password"
 }</pre>
-        <p><strong>Response Example:</strong></p>
+
+        <h3>Response Body</h3>
         <pre>{
     "success": true,
     "code": 200,
@@ -201,217 +123,198 @@
         "name": "John Doe"
     }
 }</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-pm.test("Status 200", () => pm.response.to.have.status(200));
-pm.test("Success true", () => pm.expect(pm.response.json().success).to.eql(true));
-        </pre>
     </div>
 
-    <!-- Login Section -->
+    <!-- Login -->
     <div class="card section" id="login" style="display:none;">
         <h2>Login API</h2>
-        <p><strong>Endpoint:</strong> POST auth/login</p>
-        <p><strong>Request Body:</strong></p>
+        <p class="section-info"><strong>Endpoint:</strong> POST <code>/auth/login</code></p>
+        <p class="section-info"><strong>Headers:</strong> Content-Type: application/json</p>
+
+        <h3>Request Body</h3>
         <pre>{
     "email": "john@example.com",
     "password": "your_password"
 }</pre>
-        <p><strong>Response Example:</strong></p>
+
+        <h3>Response Body</h3>
         <pre>{
     "success": true,
     "code": 200,
     "message": "Login successful.",
-    "user": { "email": "john@example.com", "name": "John Doe" },
-    "auth": { "access_token": "xxxxxx", "expires_at": 1690000000 }
-}</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Login success", () => pm.expect(jsonData.success).to.eql(true));
-if(jsonData.auth && jsonData.auth.access_token){
-    pm.environment.set("access_token", jsonData.auth.access_token);
-}
-        </pre>
-    </div>
-
-    <!-- Profile Section -->
-    <div class="card section" id="profile" style="display:none;">
-        <h2>Profile API</h2>
-        <p><strong>Endpoint:</strong> GET profile/me</p>
-        <p><strong>Headers:</strong></p>
-        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Response Example:</strong></p>
-        <pre>{
-    "success": true,
-    "code": 200,
-    "message": "Profile retrieved successfully.",
-    "user": { "email": "john@example.com", "name": "John Doe" }
-}</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Status 200", () => pm.response.to.have.status(200));
-pm.test("User email present", () => pm.expect(jsonData.user.email).to.exist);
-        </pre>
-    </div>
-
-    <!-- Notes Section -->
-    <div class="card section" id="notes" style="display:none;">
-        <h2>Notes APIs</h2>
-
-        <!-- Add Note -->
-        <h3>Add Note</h3>
-        <p><strong>Endpoint:</strong> POST /note</p>
-        <p><strong>Headers:</strong></p>
-        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Request Body:</strong></p>
-        <pre>{
-    "title": "Meeting Notes",
-    "note": "Project kickoff scheduled for Monday."
-}</pre>
-        <p><strong>Response Example:</strong></p>
-        <pre>{
-    "success": true,
-    "code": 200,
-    "note": { "id": "uuid-generated", "title": "Meeting Notes" }
-}</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Note added", () => pm.expect(jsonData.success).to.eql(true));
-if(jsonData.note && jsonData.note.id){
-    pm.environment.set("note_id", jsonData.note.id);
-}
-        </pre>
-
-        <hr>
-
-        <!-- Get Note by ID -->
-        <h3>Get Note by ID</h3>
-        <p><strong>Endpoint:</strong> GET /note/&lt;note_id&gt;</p>
-        <p><strong>Headers:</strong></p>
-        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Response Example:</strong></p>
-        <pre>{
-    "success": true,
-    "code": 200,
-    "note": {
-        "id": "uuid-generated",
-        "title": "Meeting Notes",
-        "note": "Project kickoff scheduled for Monday."
+    "user": {
+        "email": "john@example.com",
+        "name": "John Doe"
+    },
+    "auth": {
+        "access_token": "xxxxxx",
+        "expires_at": "2025-10-09T15:30:00+06:00"
     }
 }</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Note retrieved", () => pm.expect(jsonData.success).to.eql(true));
-pm.test("Note title present", () => pm.expect(jsonData.note.title).to.exist);
-        </pre>
+    </div>
 
-        <hr>
+    <!-- Profile -->
+    <div class="card section" id="profile" style="display:none;">
+        <h2>Profile API</h2>
+        <p class="section-info"><strong>Endpoint:</strong> GET <code>/auth/profile</code></p>
+        <p class="section-info"><strong>Headers:</strong> Authorization: Bearer &lt;access_token&gt;</p>
 
-        <!-- Get All Notes -->
-        <h3>Get All Notes (with pagination)</h3>
-        <p><strong>Endpoint:</strong> GET /note?page=1&per_page=10</p>
-        <p><strong>Headers:</strong></p>
-        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Response Example:</strong></p>
+        <h3>Query Params</h3>
+        <pre>Optional: none</pre>
+
+        <h3>Response Body</h3>
         <pre>{
+    "success": true,
+    "code": 200,
+    "user": {
+        "email": "john@example.com",
+        "name": "John Doe",
+        "created_at": "2025-01-01T12:00:00+06:00"
+    }
+}</pre>
+    </div>
+
+    <!-- Notes -->
+<div class="card section" id="notes" style="display:none;">
+    <h2>Notes API</h2>
+    <p class="section-info">
+        <strong>Headers:</strong> <code>Authorization: Bearer &lt;access_token&gt;</code>, <code>Content-Type: application/json</code>
+    </p>
+
+    <!-- POST Create Note -->
+    <h3>3️⃣ Create Note</h3>
+    <p class="section-info"><strong>Endpoint:</strong> POST <code>/note</code></p>
+    <h4>Request Body</h4>
+    <pre>{
+    "title": "New Note",
+    "note": "This is the content of the new note"
+}</pre>
+    <h4>Response Body</h4>
+    <pre>{
+    "success": true,
+    "code": 201,
+    "message": "Note created successfully",
+    "note": {
+        "id": "note_46",
+        "title": "New Note",
+        "note": "This is the content of the new note",
+        "created_at": "2025-10-09T10:00:00+06:00"
+    }
+}</pre>
+
+    <!-- GET Notes -->
+    <h3>1️⃣ Get Notes</h3>
+    <p class="section-info"><strong>Endpoint:</strong> GET <code>/note</code></p>
+    <h4>Query Parameters (Optional)</h4>
+    <pre>{
+    "page": 1,
+    "limit": 10,
+    "search": "keyword"
+}</pre>
+    <h4>Request Body</h4>
+    <pre>Not required</pre>
+    <h4>Response Body</h4>
+    <pre>{
     "success": true,
     "code": 200,
     "page": 1,
-    "per_page": 10,
-    "total_notes": 5,
+    "limit": 10,
+    "total": 45,
     "notes": [
-        { "id": "uuid1", "title": "Meeting Notes" },
-        { "id": "uuid2", "title": "Shopping List" }
+        {"id": "note_1", "title": "First Note", "note": "This is the first note", "created_at": "2025-10-08T12:00:00+06:00"},
+        {"id": "note_2", "title": "Second Note", "note": "This is the second note", "created_at": "2025-10-08T12:05:00+06:00"}
     ]
 }</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Success true", () => pm.expect(jsonData.success).to.eql(true));
-pm.test("Notes array exists", () => pm.expect(jsonData.notes).to.be.an("array"));
-        </pre>
 
-        <hr>
+    <hr>
 
-        <!-- Update Note -->
-        <h3>Update Note</h3>
-        <p><strong>Endpoint:</strong> PATCH /note/&lt;note_id&gt;</p>
-        <p><strong>Headers:</strong></p>
-        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Request Body:</strong></p>
-        <pre>{
-    "title": "Updated Meeting Notes",
-    "note": "Rescheduled to Tuesday at 3 PM."
-}</pre>
-        <p><strong>Response Example:</strong></p>
-        <pre>{
+    <!-- GET Note by ID -->
+    <h3>2️⃣ Get Note by ID</h3>
+    <p class="section-info"><strong>Endpoint:</strong> GET <code>/note/&lt;note_id&gt;</code></p>
+    <h4>Request Body</h4>
+    <pre>Not required</pre>
+    <h4>Response Body</h4>
+    <pre>{
     "success": true,
     "code": 200,
     "note": {
-        "id": "uuid-generated",
-        "title": "Updated Meeting Notes",
-        "note": "Rescheduled to Tuesday at 3 PM."
+        "id": "note_1",
+        "title": "First Note",
+        "note": "This is the first note",
+        "created_at": "2025-10-08T12:00:00+06:00",
+        "updated_at": null
     }
 }</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Note updated", () => pm.expect(jsonData.success).to.eql(true));
-pm.test("Updated title matches", () => pm.expect(jsonData.note.title).to.eql("Updated Meeting Notes"));
-pm.test("Updated note matches", () => pm.expect(jsonData.note.note).to.eql("Rescheduled to Tuesday at 3 PM."));
-        </pre>
 
-        <hr>
+    <hr>
 
-        <!-- Delete Note -->
-        <h3>Delete Note</h3>
-        <p><strong>Endpoint:</strong> DELETE /note/&lt;note_id&gt;</p>
-        <p><strong>Headers:</strong></p>
-        <pre>Authorization: Bearer &lt;access_token&gt;</pre>
-        <p><strong>Response Example:</strong></p>
-        <pre>{
-    "success": true,
-    "code": 200
+
+
+    <hr>
+
+    <!-- PATCH Update Note -->
+    <h3>4️⃣ Update Note</h3>
+    <p class="section-info"><strong>Endpoint:</strong> PATCH <code>/note/&lt;note_id&gt;</code></p>
+    <h4>Request Body</h4>
+    <pre>{
+    "title": "Updated Note Title",
+    "note": "Updated content of the note"
 }</pre>
-        <h4>Tests Script:</h4>
-        <pre>
-var jsonData = pm.response.json();
-pm.test("Note deleted", () => pm.expect(jsonData.success).to.eql(true));
-        </pre>
-    </div>
+    <h4>Response Body</h4>
+    <pre>{
+    "success": true,
+    "code": 200,
+    "message": "Note updated successfully",
+    "note": {
+        "id": "note_46",
+        "title": "Updated Note Title",
+        "note": "Updated content of the note",
+        "updated_at": "2025-10-09T10:15:00+06:00"
+    }
+}</pre>
+
+    <hr>
+
+    <!-- DELETE Note -->
+    <h3>5️⃣ Delete Note</h3>
+    <p class="section-info"><strong>Endpoint:</strong> DELETE <code>/note/&lt;note_id&gt;</code></p>
+    <h4>Request Body</h4>
+    <pre>Not required</pre>
+    <h4>Response Body</h4>
+    <pre>{
+    "success": true,
+    "code": 200,
+    "message": "Note deleted successfully",
+    "note_id": "note_46"
+}</pre>
+
+    <hr>
+    <p class="note">
+        <strong>Note:</strong> All note endpoints require a valid <code>Authorization</code> header.
+        Pagination and search are optional for listing notes.
+    </p>
+</div>
+
+
 
 </div>
 
-<!-- JS for sidebar toggle & menu -->
 <script>
-    const menuItems = document.querySelectorAll(".menu-item");
-    const sections = document.querySelectorAll(".section");
-    const sidebar = document.querySelector(".sidebar");
-    const toggleBtn = document.querySelector(".sidebar-toggle");
+const menuItems = document.querySelectorAll(".menu-item");
+const sections = document.querySelectorAll(".section");
+const sidebar = document.querySelector(".sidebar");
+const toggleBtn = document.querySelector(".sidebar-toggle");
 
-    menuItems.forEach(item => {
-        item.addEventListener("click", () => {
-            menuItems.forEach(i => i.classList.remove("active"));
-            item.classList.add("active");
-
-            const target = item.dataset.section;
-            sections.forEach(sec => {
-                sec.style.display = sec.id === target ? "block" : "none";
-                if(sec.id === target) sec.style.opacity = 0;
-                if(sec.id === target) setTimeout(() => sec.style.opacity = 1, 50);
-            });
-
-            if (window.innerWidth <= 768) sidebar.classList.remove("show");
-        });
+menuItems.forEach(item => {
+    item.addEventListener("click", () => {
+        menuItems.forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+        const target = item.dataset.section;
+        sections.forEach(sec => sec.style.display = sec.id === target ? "block" : "none");
     });
+});
 
-    toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("show");
-    });
+toggleBtn.addEventListener("click", () => sidebar.classList.toggle("show"));
 </script>
 
 </body>
