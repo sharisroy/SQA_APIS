@@ -74,7 +74,11 @@ def create_note():
             "note": {"id": note_id, "title": title, "note": note_text}
         }
 
-        return Response(json.dumps(response_data, indent=4), status=201, mimetype="application/json")
+        return Response(
+            json.dumps(response_data, indent=4, ensure_ascii=False),
+            status=201,
+            mimetype="application/json; charset=utf-8"
+        )
     except Exception as e:
         return format_error(f"Failed to create note: {str(e)}", 500)
 
@@ -123,7 +127,11 @@ def list_notes():
             }
         }
 
-        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
+        return Response(
+            json.dumps(response_data, indent=4, ensure_ascii=False),
+            status=200,
+            mimetype="application/json; charset=utf-8"
+        )
 
     except Exception as e:
         return format_error(f"Failed to list notes: {str(e)}", 500)
@@ -151,7 +159,11 @@ def get_note(note_id):
             "note": note
         }
 
-        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
+        return Response(
+            json.dumps(response_data, indent=4, ensure_ascii=False),
+            status=200,
+            mimetype="application/json; charset=utf-8"
+        )
     except Exception as e:
         return format_error(f"Failed to fetch note: {str(e)}", 500)
 
@@ -188,7 +200,11 @@ def update_note(note_id):
             "note": resp.data[0]
         }
 
-        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
+        return Response(
+            json.dumps(response_data, indent=4, ensure_ascii=False),
+            status=200,
+            mimetype="application/json; charset=utf-8"
+        )
     except Exception as e:
         return format_error(f"Failed to update note: {str(e)}", 500)
 
@@ -213,6 +229,10 @@ def delete_note(note_id):
             "message": "Note deleted successfully"
         }
 
-        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
+        return Response(
+            json.dumps(response_data, indent=4, ensure_ascii=False),
+            status=200,
+            mimetype="application/json; charset=utf-8"
+        )
     except Exception as e:
         return format_error(f"Failed to delete note: {str(e)}", 500)
