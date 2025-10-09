@@ -275,30 +275,184 @@
             background: var(--primary-dark);
         }
 
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: 0 0 0 1px var(--border);
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: var(--primary-light);
-            color: white;
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
+        /* API Tester */
+        .api-tester {
             background-color: var(--bg-light);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .tester-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tester-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .tester-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d0d0d0;
+        }
+
+        .response-area {
+            margin-top: 20px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .response-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-code {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-200 {
+            background-color: #e7f4e4;
+            color: var(--success);
+        }
+
+        .status-201 {
+            background-color: #e7f4e4;
+            color: var(--success);
+        }
+
+        .status-400 {
+            background-color: #ffebee;
+            color: var(--error);
+        }
+
+        .status-401 {
+            background-color: #ffebee;
+            color: var(--error);
+        }
+
+        .status-404 {
+            background-color: #ffebee;
+            color: var(--error);
+        }
+
+        .status-500 {
+            background-color: #ffebee;
+            color: var(--error);
+        }
+
+        .response-body {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: var(--radius);
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            color: var(--error);
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border-left: 4px solid var(--error);
+        }
+
+        .success-message {
+            color: var(--success);
+            background-color: #e7f4e4;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border-left: 4px solid var(--success);
         }
 
         /* Footer */
@@ -329,6 +483,11 @@
 
             section {
                 padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
             }
         }
 
@@ -427,6 +586,11 @@
             <h3>RESTful API</h3>
             <p>Clean, consistent API design following REST principles</p>
         </div>
+        <div class="feature">
+            <i class="fas fa-bolt"></i>
+            <h3>Real API Calls</h3>
+            <p>Send actual HTTP requests to live endpoints</p>
+        </div>
     </div>
 </section>
 
@@ -437,7 +601,7 @@
     <div class="endpoint">
         <div class="endpoint-header">
             <span class="method post">POST</span>
-            <span class="path">/signup</span>
+            <span class="path">/auth/signup</span>
         </div>
         <p class="description">Register a new user account.</p>
 
@@ -456,13 +620,57 @@
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
         <pre><code>{
+  "success": true,
   "code": 200,
-  "message": "User registered successfully",
+  "message": "User registered successfully.",
   "user": {
-    "name": "John Doe",
-    "email": "john@example.com"
+    "email": "john@example.com",
+    "name": "John Doe"
   }
 }</code></pre>
+    </div>
+
+    <!-- API Tester for Signup -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="signup-name">Name</label>
+                    <input type="text" id="signup-name" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="john@example.com">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" placeholder="password123">
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'signup')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="signup-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="signup-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="signup-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
     </div>
 </section>
 
@@ -473,7 +681,7 @@
     <div class="endpoint">
         <div class="endpoint-header">
             <span class="method post">POST</span>
-            <span class="path">/login</span>
+            <span class="path">/auth/login</span>
         </div>
         <p class="description">Authenticate user and receive access token.</p>
 
@@ -491,17 +699,55 @@
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
         <pre><code>{
+  "success": true,
   "code": 200,
-  "message": "Login successful",
+  "message": "Login successful.",
   "user": {
-    "name": "John Doe",
-    "email": "john@example.com"
+    "email": "john@example.com",
+    "name": "John Doe"
   },
   "auth": {
     "access_token": "eyJhbGciOiJI...",
     "expires_at": "2025-10-10T14:00:00+06:00"
   }
 }</code></pre>
+    </div>
+
+    <!-- API Tester for Login -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="password123">
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'login')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="login-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="login-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="login-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
     </div>
 </section>
 
@@ -527,14 +773,48 @@
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
         <pre><code>{
+  "success": true,
   "code": 200,
-  "message": "User profile retrieved successfully",
-  "profile": {
-    "name": "John Doe",
+  "message": "Profile retrieved successfully.",
+  "user": {
     "email": "john@example.com",
-    "id": "646c8190-378a-404d-98f0-0c9e666a7eea"
+    "name": "John Doe",
+    "joined_at": "2024-01-15T10:30:00+06:00"
   }
 }</code></pre>
+    </div>
+
+    <!-- API Tester for Profile -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="profile-token">Access Token</label>
+                <input type="text" id="profile-token" placeholder="Paste your access token here">
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'profile')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="profile-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="profile-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="profile-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
     </div>
 </section>
 
@@ -545,7 +825,7 @@
     <div class="endpoint">
         <div class="endpoint-header">
             <span class="method post">POST</span>
-            <span class="path">/note</span>
+            <span class="path">/note/</span>
         </div>
         <p class="description">Create a new note.</p>
 
@@ -578,6 +858,47 @@
   }
 }</code></pre>
     </div>
+
+    <!-- API Tester for Create Note -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="create-token">Access Token</label>
+                <input type="text" id="create-token" placeholder="Paste your access token here">
+            </div>
+            <div class="form-group">
+                <label for="create-title">Title</label>
+                <input type="text" id="create-title" placeholder="Shopping List">
+            </div>
+            <div class="form-group">
+                <label for="create-content">Note Content</label>
+                <textarea id="create-content" placeholder="Buy groceries for the week"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'create-note')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="create-note-status">201 Created</span>
+                </div>
+                <div class="response-time">Time: <span id="create-note-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="create-note-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- List Notes -->
@@ -587,7 +908,7 @@
     <div class="endpoint">
         <div class="endpoint-header">
             <span class="method get">GET</span>
-            <span class="path">/note?page=1&per_page=2</span>
+            <span class="path">/note/?page=1&per_page=10</span>
         </div>
         <p class="description">Retrieve paginated list of user's notes.</p>
 
@@ -602,7 +923,7 @@
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
         <pre><code>page: 1
-per_page: 2</code></pre>
+per_page: 10</code></pre>
 
         <div class="code-header">
             <span class="code-title">Response Body</span>
@@ -613,9 +934,9 @@ per_page: 2</code></pre>
   "message": "All notes retrieved successfully",
   "meta": {
     "current_page": 1,
-    "per_page": 2,
+    "per_page": 10,
     "total": 9,
-    "total_pages": 5
+    "total_pages": 1
   },
   "notes": [
     {
@@ -625,21 +946,56 @@ per_page: 2</code></pre>
       "created_at": "2025-09-18T20:38:48.030888+00:00",
       "updated_at": null,
       "user_id": "646c8190-378a-404d-98f0-0c9e666a7eea"
-    },
-    {
-      "id": "0e485f29-aeb3-4914-88eb-450483942a5c",
-      "title": "Todo",
-      "note": "Pay bills",
-      "created_at": "2025-09-19T10:05:43.334273+00:00",
-      "updated_at": null,
-      "user_id": "646c8190-378a-404d-98f0-0c9e666a7eea"
     }
   ]
 }</code></pre>
     </div>
+
+    <!-- API Tester for List Notes -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="list-token">Access Token</label>
+                <input type="text" id="list-token" placeholder="Paste your access token here">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="list-page">Page</label>
+                    <input type="number" id="list-page" placeholder="1" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="list-per-page">Per Page</label>
+                    <input type="number" id="list-per-page" placeholder="10" value="10" min="1" max="50">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'list-notes')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="list-notes-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="list-notes-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="list-notes-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
+    </div>
 </section>
 
-<!-- Get Note -->
+<!-- Get Note by ID -->
 <section id="get-note">
     <h2><i class="fas fa-eye"></i> Get Note by ID</h2>
 
@@ -672,6 +1028,43 @@ per_page: 2</code></pre>
     "user_id": "646c8190-378a-404d-98f0-0c9e666a7eea"
   }
 }</code></pre>
+    </div>
+
+    <!-- API Tester for Get Note -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="get-token">Access Token</label>
+                <input type="text" id="get-token" placeholder="Paste your access token here">
+            </div>
+            <div class="form-group">
+                <label for="get-note-id">Note ID</label>
+                <input type="text" id="get-note-id" placeholder="3c34a6d6-ab4e-485a-9ca3-c292aef8a1df">
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'get-note')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="get-note-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="get-note-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="get-note-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
     </div>
 </section>
 
@@ -718,6 +1111,51 @@ per_page: 2</code></pre>
   }
 }</code></pre>
     </div>
+
+    <!-- API Tester for Update Note -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="update-token">Access Token</label>
+                <input type="text" id="update-token" placeholder="Paste your access token here">
+            </div>
+            <div class="form-group">
+                <label for="update-note-id">Note ID</label>
+                <input type="text" id="update-note-id" placeholder="3c34a6d6-ab4e-485a-9ca3-c292aef8a1df">
+            </div>
+            <div class="form-group">
+                <label for="update-title">Title</label>
+                <input type="text" id="update-title" placeholder="Updated Shopping List">
+            </div>
+            <div class="form-group">
+                <label for="update-content">Note Content</label>
+                <textarea id="update-content" placeholder="Buy groceries and milk"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'update-note')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="update-note-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="update-note-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="update-note-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- Delete Note -->
@@ -746,6 +1184,43 @@ per_page: 2</code></pre>
   "message": "Note deleted successfully"
 }</code></pre>
     </div>
+
+    <!-- API Tester for Delete Note -->
+    <div class="api-tester">
+        <div class="tester-header">
+            <div class="tester-title">Test this endpoint</div>
+            <button class="btn btn-secondary" onclick="resetTester(this)">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+
+        <div class="tester-form">
+            <div class="form-group">
+                <label for="delete-token">Access Token</label>
+                <input type="text" id="delete-token" placeholder="Paste your access token here">
+            </div>
+            <div class="form-group">
+                <label for="delete-note-id">Note ID</label>
+                <input type="text" id="delete-note-id" placeholder="3c34a6d6-ab4e-485a-9ca3-c292aef8a1df">
+            </div>
+            <button class="btn btn-primary" onclick="sendRequest(this, 'delete-note')">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+
+        <div class="response-area hidden">
+            <div class="response-header">
+                <div class="response-status">
+                    <span>Status:</span>
+                    <span class="status-code" id="delete-note-status">200 OK</span>
+                </div>
+                <div class="response-time">Time: <span id="delete-note-time">0ms</span></div>
+            </div>
+            <div class="response-body" id="delete-note-response">
+                {/* Response will appear here */}
+            </div>
+        </div>
+    </div>
 </section>
 
 </main>
@@ -756,6 +1231,218 @@ per_page: 2</code></pre>
 </div>
 
 <script>
+    // API Configuration
+    const apiBaseUrl = 'https://sqa-apis.onrender.com';
+
+    // Send real API request
+    async function sendRequest(button, endpoint) {
+        const tester = button.closest('.api-tester');
+        const responseArea = tester.querySelector('.response-area');
+        const responseBody = tester.querySelector('.response-body');
+        const statusCode = tester.querySelector('.status-code');
+        const responseTime = tester.querySelector('.response-time span');
+
+        // Show loading state
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        const startTime = Date.now();
+
+        try {
+            let url, options = {};
+
+            // Real API calls to your SQA API
+            switch(endpoint) {
+                case 'signup':
+                    url = `${apiBaseUrl}/auth/signup`;
+                    options = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: document.getElementById('signup-name').value,
+                            email: document.getElementById('signup-email').value,
+                            password: document.getElementById('signup-password').value
+                        })
+                    };
+                    break;
+
+                case 'login':
+                    url = `${apiBaseUrl}/auth/login`;
+                    options = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: document.getElementById('login-email').value,
+                            password: document.getElementById('login-password').value
+                        })
+                    };
+                    break;
+
+                case 'profile':
+                    const profileToken = document.getElementById('profile-token').value;
+                    url = `${apiBaseUrl}/profile/me`;
+                    options = {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${profileToken}`
+                        }
+                    };
+                    break;
+
+                case 'create-note':
+                    const createToken = document.getElementById('create-token').value;
+                    url = `${apiBaseUrl}/note/`;
+                    options = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${createToken}`
+                        },
+                        body: JSON.stringify({
+                            title: document.getElementById('create-title').value,
+                            note: document.getElementById('create-content').value
+                        })
+                    };
+                    break;
+
+                case 'list-notes':
+                    const listToken = document.getElementById('list-token').value;
+                    const page = document.getElementById('list-page').value || 1;
+                    const perPage = document.getElementById('list-per-page').value || 10;
+                    url = `${apiBaseUrl}/note/?page=${page}&per_page=${perPage}`;
+                    options = {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${listToken}`
+                        }
+                    };
+                    break;
+
+                case 'get-note':
+                    const getToken = document.getElementById('get-token').value;
+                    const noteId = document.getElementById('get-note-id').value;
+                    url = `${apiBaseUrl}/note/${noteId}`;
+                    options = {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${getToken}`
+                        }
+                    };
+                    break;
+
+                case 'update-note':
+                    const updateToken = document.getElementById('update-token').value;
+                    const updateNoteId = document.getElementById('update-note-id').value;
+                    url = `${apiBaseUrl}/note/${updateNoteId}`;
+                    options = {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${updateToken}`
+                        },
+                        body: JSON.stringify({
+                            title: document.getElementById('update-title').value,
+                            note: document.getElementById('update-content').value
+                        })
+                    };
+                    break;
+
+                case 'delete-note':
+                    const deleteToken = document.getElementById('delete-token').value;
+                    const deleteNoteId = document.getElementById('delete-note-id').value;
+                    url = `${apiBaseUrl}/note/${deleteNoteId}`;
+                    options = {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${deleteToken}`
+                        }
+                    };
+                    break;
+            }
+
+            console.log('Sending request to:', url); // Debug log
+
+            const response = await fetch(url, options);
+            const endTime = Date.now();
+            const responseTimeMs = endTime - startTime;
+
+            let responseData;
+            try {
+                responseData = await response.json();
+            } catch (e) {
+                responseData = { message: 'No JSON response body', status: response.status };
+            }
+
+            // Update UI with response
+            statusCode.textContent = `${response.status} ${response.statusText}`;
+            statusCode.className = `status-code status-${response.status}`;
+            responseBody.textContent = JSON.stringify(responseData, null, 2);
+            responseTime.textContent = `${responseTimeMs}ms`;
+
+            // Show response area
+            responseArea.classList.remove('hidden');
+
+        } catch (error) {
+            const endTime = Date.now();
+            statusCode.textContent = 'Error';
+            statusCode.className = 'status-code status-500';
+            responseBody.textContent = JSON.stringify({
+                error: error.message,
+                code: 'NETWORK_ERROR',
+                message: 'Failed to connect to API. Please check your connection and API URL.'
+            }, null, 2);
+            responseTime.textContent = `${endTime - startTime}ms`;
+            responseArea.classList.remove('hidden');
+        } finally {
+            // Reset button
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-paper-plane"></i> Send Request';
+        }
+    }
+
+    // Reset tester function
+    function resetTester(button) {
+        const tester = button.closest('.api-tester');
+        const inputs = tester.querySelectorAll('input, textarea, select');
+        const responseArea = tester.querySelector('.response-area');
+
+        // Clear inputs
+        inputs.forEach(input => {
+            if (input.type !== 'button') {
+                input.value = '';
+            }
+        });
+
+        // Hide response area
+        responseArea.classList.add('hidden');
+    }
+
+    // Copy code functionality
+    function copyCode(button) {
+        const codeBlock = button.parentElement.nextElementSibling;
+        const textArea = document.createElement('textarea');
+        textArea.value = codeBlock.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        // Visual feedback
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 2000);
+    }
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -776,24 +1463,6 @@ per_page: 2</code></pre>
             this.classList.add('active');
         });
     });
-
-    // Copy code functionality
-    function copyCode(button) {
-        const codeBlock = button.parentElement.nextElementSibling;
-        const textArea = document.createElement('textarea');
-        textArea.value = codeBlock.textContent;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-
-        // Visual feedback
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
-        setTimeout(() => {
-            button.textContent = originalText;
-        }, 2000);
-    }
 
     // Set active link based on scroll position
     window.addEventListener('scroll', function() {
