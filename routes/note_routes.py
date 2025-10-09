@@ -1,145 +1,164 @@
+# routes/note_routes.py
 from flask import Blueprint, request, jsonify
-import jwt
-from datetime import datetime
+from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
 import uuid
+from datetime import datetime
 
+# -----------------------------
+# 🔧 Setup
+# -----------------------------
+load_dotenv()
 note_bp = Blueprint("note", __name__)
 
-# Dummy secret key (replace with your real one, or import from config)
-SECRET_KEY = "your_secret_key_here"
-
-# In-memory notes storage (for demo)
-NOTES_DB = []
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-# ==========================================================
-# 🔐 JWT Token Validation Helper
-# ==========================================================
-def verify_bearer_token():
-    """Validate Authorization header and decode JWT."""
-    auth_header = request.headers.get("Authorization")
+# -----------------------------
+# ⚙️ Helper Functions
+# -----------------------------
+def format_error(message: str, code: int = 400):
+    return jsonify({"success": False, "code": code, "error": message}), code
 
-    if not auth_header:
-        return None, jsonify({"success": False, "code": 401, "error": "Missing Authorization header"}), 401
 
-    if not auth_header.startswith("Bearer "):
-        return None, jsonify({"success": False, "code": 401, "error": "Invalid token format. Must start with 'Bearer '"}), 401
-
-    token = auth_header.split(" ")[1].strip()
+def get_user_from_token(token: str):
+    """Validate JWT token and return user object or error."""
+    if not token:
+        return None, format_error("Missing Authorization header.", 401)
+    if token.startswith("Bearer "):
+        token = token.split(" ")[1]
     try:
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return decoded, None, None
-    except jwt.ExpiredSignatureError:
-        return None, jsonify({"success": False, "code": 401, "error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
-        return None, jsonify({"success": False, "code": 401, "error": "Invalid token"}), 401
+        user_resp = supabase.auth.get_user(token)
+        if not user_resp.user:
+            return None, format_error("Invalid or expired token.", 401)
+        return user_resp.user, None
+    except Exception as e:
+        return None, format_error(f"Token validation error: {str(e)}", 401)
 
 
-# ==========================================================
-# 📝 CREATE NOTE
-# ==========================================================
-@note_bp.route("/create", methods=["POST"])
+# -----------------------------
+# 📝 POST /note → Create Note
+# -----------------------------
+@note_bp.route("/", methods=["POST"])
 def create_note():
-    """Create a new note (protected)."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
+    token = request.headers.get("Authorization")
+    user, error = get_user_from_token(token)
+    if error:
+        return error
 
-    data = request.get_json()
-    if not data or "title" not in data or "content" not in data:
-        return jsonify({"success": False, "code": 400, "error": "Missing required fields: title, content"}), 400
+    data = request.json or {}
+    title = data.get("title")
+    note_text = data.get("note")  # changed to "note" per your payload
 
-    note = {
-        "id": str(uuid.uuid4()),
-        "title": data["title"],
-        "content": data["content"],
-        "owner": user.get("username"),
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": None
-    }
-    NOTES_DB.append(note)
+    if not title or not note_text:
+        return format_error("Title and note are required.", 400)
 
-    return jsonify({"success": True, "message": "Note created successfully", "note": note}), 201
+    note_id = str(uuid.uuid4())
+    try:
+        supabase.table("notes").insert({
+            "id": note_id,
+            "user_id": user.id,
+            "title": title,
+            "note": note_text,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": None
+        }).execute()
+
+        return jsonify({
+            "success": True,
+            "code": 201,
+            "message": "Note created successfully",
+            "note": {"id": note_id, "title": title, "note": note_text}
+        }), 201
+    except Exception as e:
+        return format_error(f"Failed to create note: {str(e)}", 500)
 
 
-# ==========================================================
-# 📜 GET ALL NOTES
-# ==========================================================
-@note_bp.route("/list", methods=["GET"])
+# -----------------------------
+# 📜 GET /note → List Notes
+# -----------------------------
+@note_bp.route("/", methods=["GET"])
 def list_notes():
-    """Get all notes for the authenticated user."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
+    token = request.headers.get("Authorization")
+    user, error = get_user_from_token(token)
+    if error:
+        return error
 
-    username = user.get("username")
-    user_notes = [n for n in NOTES_DB if n["owner"] == username]
+    try:
+        resp = supabase.table("notes").select("*").eq("user_id", user.id).execute()
+        notes = resp.data or []
+        return jsonify({"success": True, "code": 200, "notes": notes}), 200
+    except Exception as e:
+        return format_error(f"Failed to list notes: {str(e)}", 500)
 
-    return jsonify({"success": True, "notes": user_notes}), 200
 
-
-# ==========================================================
-# 🔍 GET NOTE BY ID
-# ==========================================================
+# -----------------------------
+# 🔍 GET /note/<id> → Get Note by ID
+# -----------------------------
 @note_bp.route("/<note_id>", methods=["GET"])
-def get_note_by_id(note_id):
-    """Retrieve a single note by ID."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
+def get_note(note_id):
+    token = request.headers.get("Authorization")
+    user, error = get_user_from_token(token)
+    if error:
+        return error
 
-    username = user.get("username")
-    note = next((n for n in NOTES_DB if n["id"] == note_id and n["owner"] == username), None)
+    try:
+        resp = supabase.table("notes").select("*").eq("id", note_id).eq("user_id", user.id).execute()
+        if not resp.data:
+            return format_error("Note not found.", 404)
+        note = resp.data[0]
+        return jsonify({"success": True, "code": 200, "note": note}), 200
+    except Exception as e:
+        return format_error(f"Failed to fetch note: {str(e)}", 500)
 
-    if not note:
-        return jsonify({"success": False, "code": 404, "error": "Note not found"}), 404
 
-    return jsonify({"success": True, "note": note}), 200
-
-
-# ==========================================================
-# ✏️ UPDATE NOTE (PATCH)
-# ==========================================================
-@note_bp.route("/update/<note_id>", methods=["PATCH"])
+# -----------------------------
+# ✏️ PATCH /note/<id> → Update Note
+# -----------------------------
+@note_bp.route("/<note_id>", methods=["PATCH"])
 def update_note(note_id):
-    """Update note title or content."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
+    token = request.headers.get("Authorization")
+    user, error = get_user_from_token(token)
+    if error:
+        return error
 
-    data = request.get_json()
-    if not data:
-        return jsonify({"success": False, "code": 400, "error": "Missing JSON body"}), 400
+    data = request.json or {}
+    if not data.get("title") and not data.get("note"):
+        return format_error("Title or note required to update.", 400)
 
-    username = user.get("username")
-    for note in NOTES_DB:
-        if note["id"] == note_id and note["owner"] == username:
-            if "title" in data:
-                note["title"] = data["title"]
-            if "content" in data:
-                note["content"] = data["content"]
-            note["updated_at"] = datetime.utcnow().isoformat()
-            return jsonify({"success": True, "message": "Note updated successfully", "note": note}), 200
+    update_data = {}
+    if "title" in data:
+        update_data["title"] = data["title"]
+    if "note" in data:
+        update_data["note"] = data["note"]
+    update_data["updated_at"] = datetime.utcnow().isoformat()
 
-    return jsonify({"success": False, "code": 404, "error": "Note not found or unauthorized"}), 404
+    try:
+        resp = supabase.table("notes").update(update_data).eq("id", note_id).eq("user_id", user.id).execute()
+        if not resp.data:
+            return format_error("Note not found.", 404)
+        return jsonify({"success": True, "code": 200, "message": "Note updated successfully", "note": resp.data[0]}), 200
+    except Exception as e:
+        return format_error(f"Failed to update note: {str(e)}", 500)
 
 
-# ==========================================================
-# 🗑️ DELETE NOTE
-# ==========================================================
-@note_bp.route("/delete/<note_id>", methods=["DELETE"])
+# -----------------------------
+# 🗑️ DELETE /note/<id> → Delete Note
+# -----------------------------
+@note_bp.route("/<note_id>", methods=["DELETE"])
 def delete_note(note_id):
-    """Delete a note by ID."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
+    token = request.headers.get("Authorization")
+    user, error = get_user_from_token(token)
+    if error:
+        return error
 
-    username = user.get("username")
-    global NOTES_DB
-    before_count = len(NOTES_DB)
-    NOTES_DB = [n for n in NOTES_DB if not (n["id"] == note_id and n["owner"] == username)]
-
-    if len(NOTES_DB) == before_count:
-        return jsonify({"success": False, "code": 404, "error": "Note not found or unauthorized"}), 404
-
-    return jsonify({"success": True, "message": "Note deleted successfully"}), 200
+    try:
+        resp = supabase.table("notes").delete().eq("id", note_id).eq("user_id", user.id).execute()
+        if not resp.data:
+            return format_error("Note not found.", 404)
+        return jsonify({"success": True, "code": 200, "message": "Note deleted successfully"}), 200
+    except Exception as e:
+        return format_error(f"Failed to delete note: {str(e)}", 500)

@@ -1,68 +1,70 @@
 from flask import Blueprint, request, jsonify
-import jwt
+from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
 from datetime import datetime
 
+# -----------------------------
+# 🔧 Setup
+# -----------------------------
+load_dotenv()
 profile_bp = Blueprint("profile", __name__)
 
-# Dummy secret key (replace with your real secret key)
-SECRET_KEY = "your_secret_key_here"
+# -----------------------------
+# 🧩 Supabase Connection
+# -----------------------------
+SUPABASE_URL: str = os.getenv("SUPABASE_URL")
+SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# -----------------------------
+# ⚙️ Helper Functions
+# -----------------------------
+def format_error(message: str, code: int = 400):
+    """Standardized JSON error response."""
+    return jsonify({"success": False, "code": code, "error": message}), code
 
 
-# --- Helper Function for JWT Validation ---
-def verify_bearer_token():
-    auth_header = request.headers.get("Authorization")
+def get_user_from_token(token: str):
+    """Validate Bearer token and return user object, or error response."""
+    if not token:
+        return None, format_error("Missing Authorization header.", 401)
 
-    if not auth_header:
-        return None, jsonify({"success": False, "code": 401, "error": "Missing Authorization header"}), 401
+    if token.startswith("Bearer "):
+        token = token.split(" ")[1]
 
-    if not auth_header.startswith("Bearer "):
-        return None, jsonify({"success": False, "code": 401, "error": "Invalid token format. Must start with 'Bearer '"}), 401
-
-    token = auth_header.split(" ")[1].strip()
     try:
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return decoded, None, None
-    except jwt.ExpiredSignatureError:
-        return None, jsonify({"success": False, "code": 401, "error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
-        return None, jsonify({"success": False, "code": 401, "error": "Invalid token"}), 401
+        user_resp = supabase.auth.get_user(token)
+        if not user_resp.user:
+            return None, format_error("Invalid or expired token.", 401)
+        return user_resp.user, None
+    except Exception as e:
+        return None, format_error(f"Token validation failed: {str(e)}", 500)
 
 
-# --- Profile Route ---
+# -----------------------------
+# 👤 GET /me → Retrieve User Profile
+# -----------------------------
 @profile_bp.route("/me", methods=["GET"])
-def get_my_profile():
-    """Fetch user profile info (protected route)."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
+def get_profile():
+    token = request.headers.get("Authorization")
+    user, error = get_user_from_token(token)
+    if error:
+        return error
 
-    profile_data = {
-        "user_id": user.get("user_id"),
-        "username": user.get("username", "Unknown User"),
-        "email": user.get("email", "not_provided@example.com"),
-        "joined_at": user.get("joined_at", datetime.utcnow().isoformat())
-    }
+    try:
+        profile_data = {
+            "email": user.email,
+            "name": user.user_metadata.get("name") if user.user_metadata else None,
+            "joined_at": user.user_metadata.get("joined_at") if user.user_metadata else None
+        }
 
-    return jsonify({"success": True, "profile": profile_data}), 200
+        return jsonify({
+            "success": True,
+            "code": 200,
+            "message": "Profile retrieved successfully.",
+            "user": profile_data
+        }), 200
 
-
-# --- Example of Profile Update ---
-@profile_bp.route("/update", methods=["POST"])
-def update_profile():
-    """Allow user to update profile info."""
-    user, error_response, status = verify_bearer_token()
-    if error_response:
-        return error_response, status
-
-    data = request.get_json()
-    if not data:
-        return jsonify({"success": False, "code": 400, "error": "Missing JSON body"}), 400
-
-    updated_fields = {k: v for k, v in data.items() if v}
-    updated_fields["updated_at"] = datetime.utcnow().isoformat()
-
-    return jsonify({
-        "success": True,
-        "message": "Profile updated successfully",
-        "updated_fields": updated_fields
-    }), 200
+    except Exception as e:
+        return format_error(f"Failed to retrieve profile: {str(e)}", 500)
