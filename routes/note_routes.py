@@ -1,10 +1,11 @@
 # routes/note_routes.py
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 import uuid
 from datetime import datetime
+import json
 
 # -----------------------------
 # 🔧 Setup
@@ -21,7 +22,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ⚙️ Helper Functions
 # -----------------------------
 def format_error(message: str, code: int = 400):
-    return jsonify({"success": False, "code": code, "error": message}), code
+    return jsonify({"code": code, "message": message}), code
 
 
 def get_user_from_token(token: str):
@@ -51,7 +52,7 @@ def create_note():
 
     data = request.json or {}
     title = data.get("title")
-    note_text = data.get("note")  # changed to "note" per your payload
+    note_text = data.get("note")
 
     if not title or not note_text:
         return format_error("Title and note are required.", 400)
@@ -67,18 +68,19 @@ def create_note():
             "updated_at": None
         }).execute()
 
-        return jsonify({
-            "success": True,
+        response_data = {
             "code": 201,
             "message": "Note created successfully",
             "note": {"id": note_id, "title": title, "note": note_text}
-        }), 201
+        }
+
+        return Response(json.dumps(response_data, indent=4), status=201, mimetype="application/json")
     except Exception as e:
         return format_error(f"Failed to create note: {str(e)}", 500)
 
 
 # -----------------------------
-# 📜 GET /note → List Notes
+# 📜 GET /note → List Notes with Pagination
 # -----------------------------
 @note_bp.route("/", methods=["GET"])
 def list_notes():
@@ -88,9 +90,41 @@ def list_notes():
         return error
 
     try:
-        resp = supabase.table("notes").select("*").eq("user_id", user.id).execute()
+        # Pagination query params
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 10))
+        offset = (page - 1) * per_page
+
+        # Fetch total notes count
+        total_resp = supabase.table("notes").select("*", count="exact").eq("user_id", user.id).execute()
+        total_notes = total_resp.count or 0
+        total_pages = (total_notes + per_page - 1) // per_page
+
+        # Fetch notes with pagination, latest first
+        resp = (
+            supabase.table("notes")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", desc=True)
+            .range(offset, offset + per_page - 1)
+            .execute()
+        )
         notes = resp.data or []
-        return jsonify({"success": True, "code": 200, "notes": notes}), 200
+
+        response_data = {
+            "code": 200,
+            "message": "All notes retrieved successfully",
+            "notes": notes,
+            "meta": {
+                "current_page": page,
+                "per_page": per_page,
+                "total": total_notes,
+                "total_pages": total_pages
+            }
+        }
+
+        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
+
     except Exception as e:
         return format_error(f"Failed to list notes: {str(e)}", 500)
 
@@ -109,8 +143,15 @@ def get_note(note_id):
         resp = supabase.table("notes").select("*").eq("id", note_id).eq("user_id", user.id).execute()
         if not resp.data:
             return format_error("Note not found.", 404)
+
         note = resp.data[0]
-        return jsonify({"success": True, "code": 200, "note": note}), 200
+        response_data = {
+            "code": 200,
+            "message": "Note retrieved successfully",
+            "note": note
+        }
+
+        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
     except Exception as e:
         return format_error(f"Failed to fetch note: {str(e)}", 500)
 
@@ -140,7 +181,14 @@ def update_note(note_id):
         resp = supabase.table("notes").update(update_data).eq("id", note_id).eq("user_id", user.id).execute()
         if not resp.data:
             return format_error("Note not found.", 404)
-        return jsonify({"success": True, "code": 200, "message": "Note updated successfully", "note": resp.data[0]}), 200
+
+        response_data = {
+            "code": 200,
+            "message": "Note updated successfully",
+            "note": resp.data[0]
+        }
+
+        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
     except Exception as e:
         return format_error(f"Failed to update note: {str(e)}", 500)
 
@@ -159,6 +207,12 @@ def delete_note(note_id):
         resp = supabase.table("notes").delete().eq("id", note_id).eq("user_id", user.id).execute()
         if not resp.data:
             return format_error("Note not found.", 404)
-        return jsonify({"success": True, "code": 200, "message": "Note deleted successfully"}), 200
+
+        response_data = {
+            "code": 200,
+            "message": "Note deleted successfully"
+        }
+
+        return Response(json.dumps(response_data, indent=4), status=200, mimetype="application/json")
     except Exception as e:
         return format_error(f"Failed to delete note: {str(e)}", 500)
