@@ -40,6 +40,23 @@ def get_user_from_token(token: str):
         return None, format_error(f"Token validation error: {str(e)}", 401)
 
 
+def clean_note_data(note_data):
+    """Remove newline characters from note content."""
+    if isinstance(note_data, dict):
+        cleaned = {}
+        for key, value in note_data.items():
+            if key == 'note' and isinstance(value, str):
+                # Replace newlines with spaces or remove them
+                cleaned[key] = value.replace('\n', ' ').strip()
+            else:
+                cleaned[key] = value
+        return cleaned
+    elif isinstance(note_data, list):
+        return [clean_note_data(item) for item in note_data]
+    else:
+        return note_data
+
+
 # -----------------------------
 # 📝 POST /note → Create Note
 # -----------------------------
@@ -57,13 +74,16 @@ def create_note():
     if not title or not note_text:
         return format_error("Title and note are required.", 400)
 
+    # Clean the note text before storing
+    cleaned_note_text = note_text.replace('\n', ' ').strip()
+
     note_id = str(uuid.uuid4())
     try:
         supabase.table("notes").insert({
             "id": note_id,
             "user_id": user.id,
             "title": title,
-            "note": note_text,
+            "note": cleaned_note_text,  # Store cleaned note
             "created_at": datetime.utcnow().isoformat(),
             "updated_at": None
         }).execute()
@@ -71,13 +91,13 @@ def create_note():
         response_data = {
             "code": 201,
             "message": "Note created successfully",
-            "note": {"id": note_id, "title": title, "note": note_text}
+            "note": {"id": note_id, "title": title, "note": cleaned_note_text}
         }
 
         return Response(
-            json.dumps(response_data, indent=4, ensure_ascii=False),
+            json.dumps(response_data, indent=4),
             status=201,
-            mimetype="application/json; charset=utf-8"
+            mimetype="application/json"
         )
     except Exception as e:
         return format_error(f"Failed to create note: {str(e)}", 500)
@@ -115,10 +135,13 @@ def list_notes():
         )
         notes = resp.data or []
 
+        # Clean the notes data before returning
+        cleaned_notes = clean_note_data(notes)
+
         response_data = {
             "code": 200,
             "message": "All notes retrieved successfully",
-            "notes": notes,
+            "notes": cleaned_notes,
             "meta": {
                 "current_page": page,
                 "per_page": per_page,
@@ -128,9 +151,9 @@ def list_notes():
         }
 
         return Response(
-            json.dumps(response_data, indent=4, ensure_ascii=False),
+            json.dumps(response_data, indent=4),
             status=200,
-            mimetype="application/json; charset=utf-8"
+            mimetype="application/json"
         )
 
     except Exception as e:
@@ -153,16 +176,19 @@ def get_note(note_id):
             return format_error("Note not found.", 404)
 
         note = resp.data[0]
+        # Clean the note data before returning
+        cleaned_note = clean_note_data(note)
+
         response_data = {
             "code": 200,
             "message": "Note retrieved successfully",
-            "note": note
+            "note": cleaned_note
         }
 
         return Response(
-            json.dumps(response_data, indent=4, ensure_ascii=False),
+            json.dumps(response_data, indent=4),
             status=200,
-            mimetype="application/json; charset=utf-8"
+            mimetype="application/json"
         )
     except Exception as e:
         return format_error(f"Failed to fetch note: {str(e)}", 500)
@@ -186,7 +212,9 @@ def update_note(note_id):
     if "title" in data:
         update_data["title"] = data["title"]
     if "note" in data:
-        update_data["note"] = data["note"]
+        # Clean the note text before updating
+        update_data["note"] = data["note"].replace('\n', ' ').strip()
+
     update_data["updated_at"] = datetime.utcnow().isoformat()
 
     try:
@@ -194,16 +222,19 @@ def update_note(note_id):
         if not resp.data:
             return format_error("Note not found.", 404)
 
+        # Clean the response note data
+        cleaned_note = clean_note_data(resp.data[0])
+
         response_data = {
             "code": 200,
             "message": "Note updated successfully",
-            "note": resp.data[0]
+            "note": cleaned_note
         }
 
         return Response(
-            json.dumps(response_data, indent=4, ensure_ascii=False),
+            json.dumps(response_data, indent=4),
             status=200,
-            mimetype="application/json; charset=utf-8"
+            mimetype="application/json"
         )
     except Exception as e:
         return format_error(f"Failed to update note: {str(e)}", 500)
@@ -230,9 +261,9 @@ def delete_note(note_id):
         }
 
         return Response(
-            json.dumps(response_data, indent=4, ensure_ascii=False),
+            json.dumps(response_data, indent=4),
             status=200,
-            mimetype="application/json; charset=utf-8"
+            mimetype="application/json"
         )
     except Exception as e:
         return format_error(f"Failed to delete note: {str(e)}", 500)
