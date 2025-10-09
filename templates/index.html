@@ -1381,10 +1381,13 @@ per_page: 10</code></pre>
                 responseData = { message: 'No JSON response body', status: response.status };
             }
 
+            // Format the response to handle \n characters properly
+            const formattedResponse = formatResponseWithLineBreaks(responseData);
+
             // Update UI with response
             statusCode.textContent = `${response.status} ${response.statusText}`;
             statusCode.className = `status-code status-${response.status}`;
-            responseBody.textContent = JSON.stringify(responseData, null, 2);
+            responseBody.textContent = formattedResponse;
             responseTime.textContent = `${responseTimeMs}ms`;
 
             // Show response area
@@ -1406,6 +1409,65 @@ per_page: 10</code></pre>
             button.disabled = false;
             button.innerHTML = '<i class="fas fa-paper-plane"></i> Send Request';
         }
+    }
+
+    // Function to format response with proper line breaks
+    function formatResponseWithLineBreaks(obj, indent = 2) {
+        // First stringify with proper indentation
+        const jsonString = JSON.stringify(obj, null, indent);
+
+        // Process the JSON string to handle newlines in string values
+        const lines = jsonString.split('\n');
+        const processedLines = [];
+
+        let inString = false;
+        let currentIndent = '';
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
+            // Check if we're entering or exiting a string
+            for (let j = 0; j < line.length; j++) {
+                if (line[j] === '"' && (j === 0 || line[j-1] !== '\\')) {
+                    inString = !inString;
+                }
+            }
+
+            // If we're in a string and it contains \n, process it
+            if (inString && line.includes('\\n')) {
+                // Extract the current indent from the line
+                const match = line.match(/^(\s*)/);
+                currentIndent = match ? match[1] : '';
+
+                // Process the string value with actual newlines
+                const processedLine = processStringLine(line, currentIndent);
+                processedLines.push(processedLine);
+            } else {
+                processedLines.push(line);
+            }
+        }
+
+        return processedLines.join('\n');
+    }
+
+    // Helper function to process string lines with \n characters
+    function processStringLine(line, indent) {
+        // Find the string value in the line
+        const stringMatch = line.match(/^(\s*"[^"]*":\s*)"([^"]*\\n[^"]*)"(,?)$/);
+
+        if (stringMatch) {
+            const prefix = stringMatch[1];
+            const stringValue = stringMatch[2];
+            const suffix = stringMatch[3];
+
+            // Replace \n with actual newlines and proper indentation
+            const lines = stringValue.split('\\n');
+            const processedValue = lines.join('\n' + indent + '  ');
+
+            return `${prefix}"${processedValue}"${suffix}`;
+        }
+
+        return line;
     }
 
     // Reset tester function
